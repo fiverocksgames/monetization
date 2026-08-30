@@ -1,0 +1,23 @@
+﻿{
+    "schemaVersion":  1,
+    "sourceRepository":  "fiverocks-dev/make-it-max",
+    "sourceSha":  "1394ca12e3208f9c2518c20634ad654d5d652154",
+    "workflowName":  "Source CI",
+    "workflowRunId":  "33204227423",
+    "runnerName":  "FRD-DESKTOP-01",
+    "createdAt":  "2026-08-28T20:05:46.1741916Z",
+    "files":  [
+                  {
+                      "path":  "assets/index-BmjjUSQk.js",
+                      "sha256":  "5281c2e0310f7400c785688af72c4b6276c5e58ad209c739ce82c5120e207e21"
+                  },
+                  {
+                      "path":  "assets/index-YM0SoLwL.css",
+                      "sha256":  "066ecabda8d48b31bfe870046092645c03434c12c18ad7e8d391297d8db6da67"
+                  },
+                  {
+                      "path":  "index.html",
+                      "sha256":  "2903a805a8599b94c2e07ede86ad4a69b651b73c4a6f03683067b48bf1dbcf78"
+                  }
+              ]
+}

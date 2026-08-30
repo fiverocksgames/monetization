@@ -1,0 +1,156 @@
+﻿{
+    "schemaVersion":  1,
+    "sourceRepository":  "fiverocks-dev/monetization",
+    "sourceCommit":  "2e74ddc536f6cd9a16d33b6a861cd8d2776f696a",
+    "buildWorkflow":  "Build Pinned Monetization Lab",
+    "buildRunId":  "33309645292",
+    "builtAt":  "2026-08-30T11:43:52.3414213Z",
+    "runnerName":  "FRD-DESKTOP-01",
+    "components":  [
+                       {
+                           "id":  "math-rain",
+                           "sourceRepository":  "fiverocks-dev/math-rain",
+                           "sourceCommit":  "4786baf9d51e8671311758e2921232557237c711"
+                       },
+                       {
+                           "id":  "memory-game",
+                           "sourceRepository":  "fiverocks-dev/memory-game",
+                           "sourceCommit":  "b102c560f2275ce3c039effebd22a94cf1244935"
+                       },
+                       {
+                           "id":  "make-it-max",
+                           "sourceRepository":  "fiverocks-dev/make-it-max",
+                           "sourceCommit":  "1394ca12e3208f9c2518c20634ad654d5d652154"
+                       }
+                   ],
+    "files":  [
+                  {
+                      "path":  ".nojekyll",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "app.js",
+                      "sha256":  "cb33ee23a0bf1e16442d0aa7067fdeb9919bd4377c817eed9089dd3b34109ab9"
+                  },
+                  {
+                      "path":  "config/games.json",
+                      "sha256":  "b50d0c4a80624d71a0481d464e3fd2aa40b5addadcb74cae371eb878daee772b"
+                  },
+                  {
+                      "path":  "config/lab-inputs.json",
+                      "sha256":  "6c063dc74a89445c66ec40dda4d2a2f3bf614082710df75c30937ad7abbad4db"
+                  },
+                  {
+                      "path":  "config/monetization.json",
+                      "sha256":  "9da18d9598a2487e1c07f05c4f7496fcd7c04b0f57fe8e6e9213c55e63d6fa9c"
+                  },
+                  {
+                      "path":  "games/make-it-max/assets/index-BmjjUSQk.js",
+                      "sha256":  "5281c2e0310f7400c785688af72c4b6276c5e58ad209c739ce82c5120e207e21"
+                  },
+                  {
+                      "path":  "games/make-it-max/assets/index-YM0SoLwL.css",
+                      "sha256":  "066ecabda8d48b31bfe870046092645c03434c12c18ad7e8d391297d8db6da67"
+                  },
+                  {
+                      "path":  "games/make-it-max/index.html",
+                      "sha256":  "2903a805a8599b94c2e07ede86ad4a69b651b73c4a6f03683067b48bf1dbcf78"
+                  },
+                  {
+                      "path":  "games/math-rain/css/mobile-viewport.css",
+                      "sha256":  "57a74da3aa1a99db849343988b38777d0fad24ae08c472a00cf5b9c730961948"
+                  },
+                  {
+                      "path":  "games/math-rain/css/style.css",
+                      "sha256":  "46b76e4759690ab98f64bb347d4239adc40f82114bcdaa1f9053829446bdcee4"
+                  },
+                  {
+                      "path":  "games/math-rain/index.html",
+                      "sha256":  "4a9b256847f733fd94574a8ccb3b350dac3f22a0f95a9fe602d48ad5f78f63e5"
+                  },
+                  {
+                      "path":  "games/math-rain/js/app.js",
+                      "sha256":  "6176fffefaec6a517e2b529127f2875a882d89ccfef1a9240180e2d91308eeb2"
+                  },
+                  {
+                      "path":  "games/math-rain/js/game.js",
+                      "sha256":  "3738aaf7bd9e4a8d3052b51b7d6cc5272e17eee1907008d6a25e8e1802a58200"
+                  },
+                  {
+                      "path":  "games/math-rain/manifest.json",
+                      "sha256":  "c6824832ddf7f0f5b4986551d8f3562d6bc46164bf1218cad5bcee0b31255103"
+                  },
+                  {
+                      "path":  "games/math-rain/sw.js",
+                      "sha256":  "69c46c458b46df51a2f8089b2a39acb6ad0eb429c9f091881270dd52ddc7d6bb"
+                  },
+                  {
+                      "path":  "games/memory-game/css/style.css",
+                      "sha256":  "9b057dda99a2d4cd201abe069fea1f8715128991c4a421e4c3732c44d32d8b24"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-144.png",
+                      "sha256":  "129e21d29263883d89c9a9e6029c4dffe635729cf01cd27afd55ba74348364ea"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-192.png",
+                      "sha256":  "05c0e12f30fcf68aa8a67979a3afb36dc1c7080ef1f3d285588ff0a5dc177442"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-36.png",
+                      "sha256":  "a8bbbae40f78760e78517cea4caef75334a527d64686e566dca24233942d0454"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-48.png",
+                      "sha256":  "6ef7d348bad5e72149f04665c93affe56eb581e80d12ce19b861bdfa597c3ffe"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-512.png",
+                      "sha256":  "a04eace5f65616c98234e1edeac8a55058b1f919042729fb5f764c43584103cd"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-72.png",
+                      "sha256":  "b29acc7640678aa93e3683f639b4513c7021cbaa3a7268d8c0adbfe34a19b45f"
+                  },
+                  {
+                      "path":  "games/memory-game/icons/icon-96.png",
+                      "sha256":  "7744edd14200ec1a91d57c7fb5e466e4d7e34380090b3109765f67fd80711ec4"
+                  },
+                  {
+                      "path":  "games/memory-game/index.html",
+                      "sha256":  "ab69b4dc2440c1763e81db195422245fd0a955b02b5a179c2afedd8fdbf86bf3"
+                  },
+                  {
+                      "path":  "games/memory-game/js/ai.js",
+                      "sha256":  "c0bd998c4d51524efe9793f7db09bc4da87b2606a3e10dcb1b3aae623e5465dc"
+                  },
+                  {
+                      "path":  "games/memory-game/js/app.js",
+                      "sha256":  "153425835059f0baf983d2ea7caf019154c0cfd3bfc6cb62d09d08891185bc19"
+                  },
+                  {
+                      "path":  "games/memory-game/js/game.js",
+                      "sha256":  "48b85f82e8c8c19626518945421752ac1ac774e1f63272561fd10f4002c44b7b"
+                  },
+                  {
+                      "path":  "games/memory-game/js/themes.js",
+                      "sha256":  "cc8898d03445828462b9f5f3c00c1223e3cd30359f820a7843ab164be41c9262"
+                  },
+                  {
+                      "path":  "games/memory-game/manifest.json",
+                      "sha256":  "af3ce354c4dbacc1ebed389f963e877ff6c1c4868bc4cb55e053158cc0067c7e"
+                  },
+                  {
+                      "path":  "games/memory-game/sw.js",
+                      "sha256":  "7ad1cdf9f68b90dafd72f1f1f9fd8e7179394dfac3c736a343bed91a3fd95e77"
+                  },
+                  {
+                      "path":  "index.html",
+                      "sha256":  "7f46906b55adfa6370df5553dba872c269a7bfa2f311611ab729725e368108c4"
+                  },
+                  {
+                      "path":  "styles.css",
+                      "sha256":  "7ff5a750dd5a938f952ffad6041cb245410d939d4694134c517334377e4102ca"
+                  }
+              ]
+}

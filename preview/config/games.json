@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "games": [
+    {
+      "id": "hub",
+      "name": "Game Hub",
+      "sourceRepository": "fiverocks-dev/game-hub",
+      "publicRepository": "fiverocksgames/game-hub",
+      "runtime": "static",
+      "enabled": true
+    },
+    {
+      "id": "math-rain",
+      "name": "Math Rain",
+      "sourceRepository": "fiverocks-dev/math-rain",
+      "publicRepository": "fiverocksgames/math-rain",
+      "runtime": "vanilla",
+      "enabled": true
+    },
+    {
+      "id": "memory-game",
+      "name": "Memory Game",
+      "sourceRepository": "fiverocks-dev/memory-game",
+      "publicRepository": "fiverocksgames/memory-game",
+      "runtime": "vanilla",
+      "enabled": true
+    },
+    {
+      "id": "make-it-max",
+      "name": "Make It Max",
+      "sourceRepository": "fiverocks-dev/make-it-max",
+      "publicRepository": "fiverocksgames/make-it-max",
+      "runtime": "react",
+      "enabled": true
+    },
+    {
+      "id": "math-fighter",
+      "name": "Math Fighter",
+      "sourceRepository": "fiverocks-dev/math-fighter",
+      "publicRepository": "fiverocksgames/math-fighter",
+      "runtime": "unity-webgl",
+      "enabled": false
+    },
+    {
+      "id": "math-defender",
+      "name": "Math Defender",
+      "sourceRepository": "fiverocks-dev/math-defender",
+      "publicRepository": "fiverocksgames/math-defender",
+      "runtime": "unity-webgl",
+      "enabled": false
+    }
+  ]
+}

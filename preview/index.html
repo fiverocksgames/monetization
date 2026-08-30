@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>FiveRocks Monetization Lab</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>FiveRocks Monetization Lab</h1>
+      <p>Hub부터 게임까지 광고 UX를 실제 배포 전에 시뮬레이션합니다.</p>
+    </div>
+    <div class="header-actions">
+      <span id="build-id" class="build-id">Build local</span>
+      <button id="open-debug">⚙ Debug</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="hub-view" class="hub-view">
+      <div class="hub-copy">
+        <span class="eyebrow">MONETIZATION LAB</span>
+        <h2>FiveRocksGames</h2>
+        <p>게임을 고르고 광고가 실제 UX에 어떤 영향을 주는지 확인합니다.</p>
+      </div>
+      <div id="game-grid" class="game-grid"></div>
+
+      <section id="inline-banner" class="inline-banner hidden" aria-label="테스트 배너 광고">
+        <span>ADVERTISEMENT · TEST</span>
+        <strong>FiveRocks Mock Banner</strong>
+        <small>실제 광고 크기와 여백을 검토하기 위한 시뮬레이션입니다.</small>
+      </section>
+    </section>
+
+    <section id="game-view" class="game-view hidden">
+      <div class="game-toolbar">
+        <button id="back-hub">← Hub</button>
+        <strong id="current-game"></strong>
+        <button id="show-interstitial">Interstitial</button>
+        <button id="show-rewarded">Rewarded</button>
+      </div>
+      <div class="stage">
+        <iframe id="game-frame" title="Game preview"></iframe>
+      </div>
+    </section>
+
+    <aside id="debug-panel" class="debug hidden">
+      <h2>Monetization Debug</h2>
+
+      <label>Hub banner
+        <select id="banner-mode">
+          <option value="off">Off</option>
+          <option value="inline">Inline Bottom</option>
+          <option value="anchor">Bottom Anchor</option>
+          <option value="delayed-anchor">Delayed Anchor</option>
+        </select>
+      </label>
+
+      <label>Scenario
+        <select id="scenario">
+          <option value="success">Success</option>
+          <option value="no-fill">No Fill</option>
+          <option value="load-error">Load Error</option>
+          <option value="user-close">User Close</option>
+        </select>
+      </label>
+
+      <label>Latency (ms)
+        <input id="latency" type="number" value="700" min="0" step="100">
+      </label>
+
+      <label>Interstitial cooldown (sec)
+        <input id="cooldown" type="number" value="0" min="0">
+      </label>
+
+      <label>Delayed anchor delay (ms)
+        <input id="anchor-delay" type="number" value="1500" min="0" step="100">
+      </label>
+
+      <div class="debug-actions">
+        <button id="test-interstitial">Test Interstitial</button>
+        <button id="test-rewarded">Test Rewarded</button>
+      </div>
+
+      <pre id="stats"></pre>
+    </aside>
+  </main>
+
+  <div id="anchor-banner" class="anchor-banner hidden" role="region" aria-label="테스트 앵커 광고">
+    <button id="anchor-close" class="anchor-close" aria-label="광고 닫기">×</button>
+    <span>ADVERTISEMENT · TEST</span>
+    <strong>FiveRocks Mock Anchor</strong>
+  </div>
+
+  <div id="ad-overlay" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="ad-card">
+      <div class="test-label">TEST AD</div>
+      <div class="creative">FiveRocks Ad Simulator</div>
+      <p id="ad-kind"></p>
+      <button id="ad-close" disabled>닫기</button>
+      <p id="ad-status"></p>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

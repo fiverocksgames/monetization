@@ -1,0 +1,10 @@
+{
+  "name": "Math Rain - 수학 빗방울 게임",
+  "short_name": "Math Rain",
+  "description": "재미있는 수학 문제 빗방울 게임",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#667eea",
+  "theme_color": "#4a90e2",
+  "orientation": "portrait"
+}

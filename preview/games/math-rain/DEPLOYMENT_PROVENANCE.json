@@ -1,0 +1,40 @@
+﻿{
+    "schemaVersion":  1,
+    "sourceRepository":  "fiverocks-dev/math-rain",
+    "sourceSha":  "4786baf9d51e8671311758e2921232557237c711",
+    "workflowName":  "Source CI",
+    "workflowRunId":  "33222182896",
+    "runnerName":  "FRD-DESKTOP-01",
+    "createdAt":  "2026-08-29T00:00:17.1027112Z",
+    "toolchain":  "static-web",
+    "files":  [
+                  {
+                      "path":  "css/mobile-viewport.css",
+                      "sha256":  "57a74da3aa1a99db849343988b38777d0fad24ae08c472a00cf5b9c730961948"
+                  },
+                  {
+                      "path":  "css/style.css",
+                      "sha256":  "46b76e4759690ab98f64bb347d4239adc40f82114bcdaa1f9053829446bdcee4"
+                  },
+                  {
+                      "path":  "index.html",
+                      "sha256":  "4a9b256847f733fd94574a8ccb3b350dac3f22a0f95a9fe602d48ad5f78f63e5"
+                  },
+                  {
+                      "path":  "js/app.js",
+                      "sha256":  "6176fffefaec6a517e2b529127f2875a882d89ccfef1a9240180e2d91308eeb2"
+                  },
+                  {
+                      "path":  "js/game.js",
+                      "sha256":  "3738aaf7bd9e4a8d3052b51b7d6cc5272e17eee1907008d6a25e8e1802a58200"
+                  },
+                  {
+                      "path":  "manifest.json",
+                      "sha256":  "c6824832ddf7f0f5b4986551d8f3562d6bc46164bf1218cad5bcee0b31255103"
+                  },
+                  {
+                      "path":  "sw.js",
+                      "sha256":  "69c46c458b46df51a2f8089b2a39acb6ad0eb429c9f091881270dd52ddc7d6bb"
+                  }
+              ]
+}

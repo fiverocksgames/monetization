@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "components": {
+    "math-rain": {
+      "repository": "fiverocks-dev/math-rain",
+      "sourceCommit": "4786baf9d51e8671311758e2921232557237c711"
+    },
+    "memory-game": {
+      "repository": "fiverocks-dev/memory-game",
+      "sourceCommit": "b102c560f2275ce3c039effebd22a94cf1244935"
+    },
+    "make-it-max": {
+      "repository": "fiverocks-dev/make-it-max",
+      "sourceCommit": "1394ca12e3208f9c2518c20634ad654d5d652154"
+    }
+  }
+}

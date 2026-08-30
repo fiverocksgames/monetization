@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "provider": "mock",
+  "hub": {
+    "bannerModes": ["off", "inline", "anchor", "delayed-anchor"],
+    "defaultBannerMode": "off",
+    "delayedAnchorMs": 1500
+  },
+  "placements": {
+    "level_complete": {"format":"interstitial","enabled":true,"cooldownSeconds":180},
+    "game_over": {"format":"interstitial","enabled":false},
+    "revive": {"format":"rewarded","enabled":true},
+    "hint": {"format":"rewarded","enabled":true},
+    "hub_footer": {"format":"banner","enabled":true}
+  }
+}
