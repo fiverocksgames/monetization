@@ -1,16 +1,16 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "9b03f01228264bfd701f0e69b55ea6d71dba4e09",
+    "sourceCommit":  "86c9d855a1623accbf1bace3c3c1ae0beaeccf4c",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "33368602840",
-    "builtAt":  "2026-08-31T07:29:51.7191084Z",
+    "buildRunId":  "33378457978",
+    "builtAt":  "2026-08-31T09:36:05.9259126Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
                            "id":  "math-rain",
                            "sourceRepository":  "fiverocks-dev/math-rain",
-                           "sourceCommit":  "96cb417d4285d29a51ee20bfc7232f7a8418f248"
+                           "sourceCommit":  "32cfa7d8999f143cc0c2ce3a77c410f521a25a0f"
                        },
                        {
                            "id":  "memory-game",
@@ -38,7 +38,7 @@
                   },
                   {
                       "path":  "config/lab-inputs.json",
-                      "sha256":  "58dc8c48d669189a07e29b65930f24ecb1be7bda4a27cce9dc137b496f9721a4"
+                      "sha256":  "b0c6d850d1ccccca02dcbff2abfb84a6077df58078d1d1b3c35a4db38ef4979f"
                   },
                   {
                       "path":  "config/monetization.json",
@@ -55,6 +55,10 @@
                   {
                       "path":  "games/make-it-max/index.html",
                       "sha256":  "2903a805a8599b94c2e07ede86ad4a69b651b73c4a6f03683067b48bf1dbcf78"
+                  },
+                  {
+                      "path":  "games/math-rain/assets/index-C1kqYgrQ.js",
+                      "sha256":  "50920c42579747c0c9e9e1cc59a28c0ed5e0afb39ad8e068c75ffb1bbf186fd5"
                   },
                   {
                       "path":  "games/math-rain/assets/index-CWyVYbPR.js",
@@ -74,7 +78,7 @@
                   },
                   {
                       "path":  "games/math-rain/index.html",
-                      "sha256":  "47eba61aa182081b9ad6a14e3f8643eebd3c473ec71c2db954494e5497e6454e"
+                      "sha256":  "2030d253b8a75ad89e50a75ada9af560928864d213371d52f38c1e50736e4ee6"
                   },
                   {
                       "path":  "games/math-rain/manifest.json",

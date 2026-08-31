@@ -3,7 +3,7 @@
   "components": {
     "math-rain": {
       "repository": "fiverocks-dev/math-rain",
-      "sourceCommit": "96cb417d4285d29a51ee20bfc7232f7a8418f248"
+      "sourceCommit": "32cfa7d8999f143cc0c2ce3a77c410f521a25a0f"
     },
     "memory-game": {
       "repository": "fiverocks-dev/memory-game",
