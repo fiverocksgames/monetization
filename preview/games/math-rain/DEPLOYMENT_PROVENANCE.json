@@ -1,40 +1,40 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/math-rain",
-    "sourceSha":  "4786baf9d51e8671311758e2921232557237c711",
+    "sourceSha":  "96cb417d4285d29a51ee20bfc7232f7a8418f248",
     "workflowName":  "Source CI",
-    "workflowRunId":  "33222182896",
-    "runnerName":  "FRD-DESKTOP-01",
-    "createdAt":  "2026-08-29T00:00:17.1027112Z",
-    "toolchain":  "static-web",
+    "workflowRunId":  "33368281275",
+    "runnerName":  "FRD-LAPTOP-01",
+    "createdAt":  "2026-08-31T07:25:52.6948429Z",
+    "toolchain":  "react-19.2.8 + typescript-6.0.3 + vite-8.2.2",
     "files":  [
                   {
-                      "path":  "css/mobile-viewport.css",
-                      "sha256":  "57a74da3aa1a99db849343988b38777d0fad24ae08c472a00cf5b9c730961948"
+                      "path":  "assets/index-e7jxQ9Jq.css",
+                      "sha256":  "e6653d7f343b286cc2817cfddf699bc48d030e84e589fcf243ea07c9f1111c5c"
                   },
                   {
-                      "path":  "css/style.css",
-                      "sha256":  "46b76e4759690ab98f64bb347d4239adc40f82114bcdaa1f9053829446bdcee4"
+                      "path":  "assets/index-RstBJMPr.js",
+                      "sha256":  "eec81e18fa246bee332d19b7fbfb5f65f19fd36bad1cc553f69f4a60d29bda95"
                   },
                   {
                       "path":  "index.html",
-                      "sha256":  "4a9b256847f733fd94574a8ccb3b350dac3f22a0f95a9fe602d48ad5f78f63e5"
-                  },
-                  {
-                      "path":  "js/app.js",
-                      "sha256":  "6176fffefaec6a517e2b529127f2875a882d89ccfef1a9240180e2d91308eeb2"
-                  },
-                  {
-                      "path":  "js/game.js",
-                      "sha256":  "3738aaf7bd9e4a8d3052b51b7d6cc5272e17eee1907008d6a25e8e1802a58200"
+                      "sha256":  "47eba61aa182081b9ad6a14e3f8643eebd3c473ec71c2db954494e5497e6454e"
                   },
                   {
                       "path":  "manifest.json",
-                      "sha256":  "c6824832ddf7f0f5b4986551d8f3562d6bc46164bf1218cad5bcee0b31255103"
+                      "sha256":  "625b90f93ee4e248ecfdd235428333e0a46f8888dd86954bf08d6c3e646a35e0"
+                  },
+                  {
+                      "path":  "og/math-rain-share.jpg",
+                      "sha256":  "ecd21f517a95bb9faab35118a0e4b8261b0031a2794ada9116ba6f8f1aa9a136"
+                  },
+                  {
+                      "path":  "og/math-rain-share-v3.jpg",
+                      "sha256":  "3e9b006ac9d578a0784a00a6238fbf43b680a705d3840e183168d3493d72648e"
                   },
                   {
                       "path":  "sw.js",
-                      "sha256":  "69c46c458b46df51a2f8089b2a39acb6ad0eb429c9f091881270dd52ddc7d6bb"
+                      "sha256":  "a77ab359ef0aba876d24000a7eac2b7539eeb45625a4229028d63774dce4d50b"
                   }
               ]
 }

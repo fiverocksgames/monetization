@@ -1,143 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#4a90e2">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Math Rain">
-    <link rel="manifest" href="manifest.json">
-    <title>Math Rain - 수학 빗방울 게임</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/mobile-viewport.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#4a90e2" />
+  <meta name="description" content="빠르게 계산하고 정답 카드를 골라 떨어지는 수학 빗방울을 해결하는 Math Rain 게임입니다." />
+  <meta property="og:title" content="Math Rain - 수학 빗방울 게임" />
+  <meta property="og:description" content="빠르게 계산하고 정답 카드를 골라 떨어지는 수학 빗방울을 해결해 보세요." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://fiverocksgames.github.io/math-rain/preview/" />
+  <link rel="canonical" href="https://fiverocksgames.github.io/math-rain/preview/" />
+  <meta property="og:image" content="https://fiverocksgames.github.io/math-rain/preview/og/math-rain-share-v3.jpg" />
+  <meta property="og:image:secure_url" content="https://fiverocksgames.github.io/math-rain/preview/og/math-rain-share-v3.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="600" />
+  <meta property="og:image:height" content="315" />
+  <meta property="og:image:alt" content="Math Rain 수학 문제 빗방울 게임" />
+  <meta property="og:site_name" content="Math Rain" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Math Rain - 수학 빗방울 게임" />
+  <meta name="twitter:description" content="빠르게 계산하고 정답 카드를 골라 떨어지는 수학 빗방울을 해결해 보세요." />
+  <meta name="twitter:image" content="https://fiverocksgames.github.io/math-rain/preview/og/math-rain-share-v3.jpg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Math Rain" />
+  <link rel="manifest" href="./manifest.json" />
+  <title>Math Rain - 수학 빗방울 게임</title>
+  <script type="module" crossorigin src="./assets/index-RstBJMPr.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-e7jxQ9Jq.css">
 </head>
 <body>
-    <div id="app">
-        <!-- Setup Screen -->
-        <div id="setup-screen" class="screen active">
-            <h1>🌧️ Math Rain</h1>
-            <p class="subtitle">수학 문제 빗방울 게임</p>
-
-            <div class="setup-container">
-                <div class="setup-group">
-                    <label>레벨 선택</label>
-                    <div class="level-selector">
-                        <button class="level-btn" data-level="1">1</button>
-                        <button class="level-btn" data-level="2">2</button>
-                        <button class="level-btn selected" data-level="3">3</button>
-                        <button class="level-btn" data-level="4">4</button>
-                        <button class="level-btn" data-level="5">5</button>
-                        <button class="level-btn" data-level="6">6</button>
-                        <button class="level-btn" data-level="7">7</button>
-                        <button class="level-btn" data-level="8">8</button>
-                        <button class="level-btn" data-level="9">9</button>
-                        <button class="level-btn" data-level="10">10</button>
-                    </div>
-                    <p class="level-info" id="level-info">레벨 3: 동시 빗방울 3개</p>
-                </div>
-
-                <div class="setup-group">
-                    <label>연산 선택</label>
-                    <div class="btn-group" id="operation-select">
-                        <button class="btn-option" data-value="add">➕ 덧셈</button>
-                        <button class="btn-option" data-value="sub">➖ 뺄셈</button>
-                        <button class="btn-option" data-value="mul">✖️ 곱셈</button>
-                        <button class="btn-option" data-value="div">➗ 나눗셈</button>
-                        <button class="btn-option selected" data-value="mixed">🔀 혼합</button>
-                    </div>
-                </div>
-
-                <div class="setup-group">
-                    <label>난이도</label>
-                    <div class="btn-group" id="difficulty-select">
-                        <button class="btn-option" data-value="easy">Easy</button>
-                        <button class="btn-option selected" data-value="normal">Normal</button>
-                        <button class="btn-option" data-value="hard">Hard</button>
-                    </div>
-                </div>
-
-                <div class="setup-group">
-                    <label>자릿수 선택</label>
-                    <div class="btn-group" id="digit-select">
-                        <button class="btn-option selected" data-value="1">1자리 + 1자리</button>
-                        <button class="btn-option" data-value="2">2자리 + 1자리</button>
-                        <button class="btn-option" data-value="3">2자리 + 2자리</button>
-                    </div>
-                </div>
-
-                <button id="start-game" class="btn-start">게임 시작</button>
-                <a class="game-hub-link" href="https://fiverocksgames.github.io/game-hub/">🎮 Game Hub</a>
-            </div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="game-screen" class="screen">
-            <div class="game-header">
-                <div class="game-info">
-                    <div class="info-item">
-                        <span class="info-label">난이도</span>
-                        <span class="info-value" id="difficulty-display">Normal</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">레벨</span>
-                        <span class="info-value" id="level-display">1</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="hearts" id="lives-display">❤️❤️❤️</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">점수</span>
-                        <span class="info-value" id="score-display">0</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">진행</span>
-                        <span class="info-value" id="progress-display">0/10</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-board-container">
-                <div class="game-board" id="game-board"></div>
-            </div>
-
-            <div class="cards-container" id="cards-container"></div>
-
-            <div class="game-footer">
-                <button id="back-to-menu" class="btn-secondary">메뉴로</button>
-                <button id="restart-game" class="btn-secondary">다시 시작</button>
-            </div>
-        </div>
-
-        <!-- Result Screen -->
-        <div id="result-screen" class="screen">
-            <div class="result-container">
-                <h2 id="result-title">🎉 레벨 클리어!</h2>
-                <div class="result-stats">
-                    <div class="stat-item">
-                        <span class="stat-label">최종 점수</span>
-                        <span class="stat-value" id="final-score">0</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">도달 레벨</span>
-                        <span class="stat-value" id="final-level">1</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-label">정확도</span>
-                        <span class="stat-value" id="accuracy">0%</span>
-                    </div>
-                </div>
-                <div class="result-buttons">
-                    <button id="next-level" class="btn-start">다음 레벨</button>
-                    <button id="play-again" class="btn-secondary">같은 레벨</button>
-                    <button id="back-to-menu-result" class="btn-secondary">메뉴로</button>
-                </div>
-            </div>
-        </div>
-</div>
-
-    <script src="js/game.js"></script>
-
-    <script src="js/app.js"></script>
+  <div id="root"></div>
 </body>
 </html>

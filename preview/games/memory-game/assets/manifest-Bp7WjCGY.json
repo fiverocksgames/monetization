@@ -1,0 +1,23 @@
+{
+    "name": "Memory Game - 메모리 게임",
+    "short_name": "메모리 게임",
+    "description": "카드 뒤집기 메모리 게임 - 컴퓨터 또는 친구와 대결!",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#0f0c29",
+    "theme_color": "#302b63",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
