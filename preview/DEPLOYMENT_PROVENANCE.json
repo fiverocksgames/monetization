@@ -1,10 +1,10 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "78833ce71cf7ddb78758e2fd07a6959d073f23fd",
+    "sourceCommit":  "7b906a7a0eabd8250eddadd201a95f60c794c920",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "33385416705",
-    "builtAt":  "2026-08-31T11:06:49.3384052Z",
+    "buildRunId":  "33444747734",
+    "builtAt":  "2026-08-31T22:08:08.0730318Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
@@ -30,7 +30,7 @@
                   },
                   {
                       "path":  "app.js",
-                      "sha256":  "bd04cc8bf6fb8fd0424de87f9fcd40a770fe6d373cebbf88e84f9aa8004ed0af"
+                      "sha256":  "662a0c860f92e27971594da8ac57988592a517a9cacb3e94e5eb7d2086efe592"
                   },
                   {
                       "path":  "config/games.json",
@@ -42,7 +42,7 @@
                   },
                   {
                       "path":  "config/monetization.json",
-                      "sha256":  "9da18d9598a2487e1c07f05c4f7496fcd7c04b0f57fe8e6e9213c55e63d6fa9c"
+                      "sha256":  "ce534810b0406efa3ba4b8edb05a6bce6e442415631a240825c76b844fc0c45f"
                   },
                   {
                       "path":  "games/make-it-max/assets/index-BmjjUSQk.js",
@@ -162,11 +162,11 @@
                   },
                   {
                       "path":  "index.html",
-                      "sha256":  "31dedeef9f1bf33ef735b1348a6fe440556e7adaec1903d9c3cb49b78db1d4cf"
+                      "sha256":  "6f13be8cda53423855625228e08459cb79118009a996ca58470684a94e8d4b44"
                   },
                   {
                       "path":  "styles.css",
-                      "sha256":  "fbfa3de643fe739f226b946a42225dd490b05e7c56bea3b868b8f23c5ff13e0b"
+                      "sha256":  "46ace9aa0ac0f82cda797deeefcc739ccc50519ff22bab3ce3cfbf09caa2a262"
                   }
               ]
 }

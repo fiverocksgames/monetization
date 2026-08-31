@@ -5,6 +5,11 @@ const fallbackGames = [
   { id: "make-it-max", name: "Make It Max", runtime: "react", enabled: true }
 ];
 
+const CONTRACT_VERSION = 2;
+const REQUEST_TYPE = "fiverocks:monetization:request";
+const RESPONSE_TYPE = "fiverocks:monetization:response";
+const EVENT_TYPE = "fiverocks:monetization:event";
+
 const state = {
   games: fallbackGames,
   stats: { opportunities: 0, shown: 0, skipped: 0, rewarded: 0, failed: 0 },
@@ -12,7 +17,9 @@ const state = {
   delayedAnchorTimer: null,
   activeGame: null,
   activeAdRequest: null,
-  activeAdScenario: null
+  activeAdScenario: null,
+  activeAdContext: null,
+  events: []
 };
 
 const $ = (id) => document.getElementById(id);
@@ -105,36 +112,116 @@ function updateStats() {
   $("stats").textContent = JSON.stringify(state.stats, null, 2);
 }
 
+function renderEvents() {
+  const recent = state.events.slice(-20).reverse().map((event) => ({
+    time: event.timestamp.slice(11, 19),
+    event: event.event,
+    game: event.gameId,
+    placement: event.placement,
+    scenario: event.scenario,
+    reason: event.reason
+  }));
+  $("events").textContent = recent.length
+    ? recent.map((event) => JSON.stringify(event)).join("\n")
+    : "No ad events yet.";
+}
+
+function recordAdEvent(event, details = {}) {
+  const item = {
+    timestamp: new Date().toISOString(),
+    event,
+    gameId: details.gameId || state.activeGame?.id || "lab",
+    format: details.format || "unknown",
+    placement: details.placement || "manual",
+    requestId: details.requestId || null,
+    scenario: details.scenario || null,
+    reason: details.reason || null
+  };
+
+  state.events.push(item);
+  if (state.events.length > 100) state.events.shift();
+
+  if (event === "ad_opportunity") state.stats.opportunities++;
+  if (event === "ad_shown") state.stats.shown++;
+  if (event === "ad_rewarded") state.stats.rewarded++;
+  if (event === "ad_failed") {
+    state.stats.failed++;
+    if (item.reason === "busy" || item.reason === "cooldown") state.stats.skipped++;
+  }
+
+  updateStats();
+  renderEvents();
+}
+
+function respondToRequest(request, rewarded, reason) {
+  if (!request?.source) return;
+
+  const response = {
+    type: RESPONSE_TYPE,
+    requestId: request.requestId,
+    rewarded,
+    reason
+  };
+
+  if (request.schemaVersion === CONTRACT_VERSION) {
+    Object.assign(response, {
+      schemaVersion: CONTRACT_VERSION,
+      gameId: request.gameId,
+      format: request.format,
+      placement: request.placement
+    });
+  }
+
+  request.source.postMessage(response, request.origin || location.origin);
+}
+
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function showAd(kind, request = null) {
-  if (!$("ad-overlay").classList.contains("hidden")) {
-    if (request) {
-      request.source.postMessage({
-        type: "fiverocks:monetization:response",
+  const scenario = $("scenario").value;
+  const context = request
+    ? {
+        gameId: request.gameId,
+        format: request.format,
+        placement: request.placement,
         requestId: request.requestId,
-        rewarded: false,
-        reason: "busy"
-      }, "*");
-    }
+        scenario
+      }
+    : {
+        gameId: state.activeGame?.id || "lab",
+        format: kind,
+        placement: "manual",
+        requestId: crypto.randomUUID(),
+        scenario
+      };
+
+  if (!request) {
+    recordAdEvent("ad_opportunity", context);
+    recordAdEvent("ad_requested", context);
+  }
+
+  if (!$("ad-overlay").classList.contains("hidden")) {
+    recordAdEvent("ad_failed", { ...context, reason: "busy" });
+    respondToRequest(request, false, "busy");
     return;
   }
 
   state.activeAdRequest = request;
-  state.activeAdScenario = $("scenario").value;
-  state.stats.opportunities++;
-  updateStats();
+  state.activeAdScenario = scenario;
+  state.activeAdContext = context;
 
-  const scenario = state.activeAdScenario;
   const latency = Number($("latency").value || 0);
 
   if (kind === "interstitial") {
     const cooldownMs = Number($("cooldown").value || 0) * 1000;
     if (Date.now() - state.lastInterstitialAt < cooldownMs) {
-      state.stats.skipped++;
-      updateStats();
+      recordAdEvent("ad_failed", { ...context, reason: "cooldown" });
+      respondToRequest(request, false, "cooldown");
+      state.activeAdRequest = null;
+      state.activeAdScenario = null;
+      state.activeAdContext = null;
       return;
     }
   }
@@ -147,14 +234,14 @@ async function showAd(kind, request = null) {
   await delay(latency);
 
   if (scenario === "no-fill" || scenario === "load-error") {
-    state.stats.failed++;
+    recordAdEvent("ad_failed", { ...context, reason: scenario });
     $("ad-status").textContent = scenario === "no-fill" ? "No Fill" : "Load Error";
     $("ad-close").disabled = false;
-    updateStats();
     return;
   }
 
-  state.stats.shown++;
+  recordAdEvent("ad_loaded", context);
+  recordAdEvent("ad_shown", context);
   if (kind === "interstitial") state.lastInterstitialAt = Date.now();
 
   $("ad-status").textContent = scenario === "user-close"
@@ -163,13 +250,7 @@ async function showAd(kind, request = null) {
       ? "Ad completed · reward granted"
       : "Ad completed";
   $("ad-close").disabled = false;
-
-  if (kind === "rewarded" && scenario === "success") {
-    state.stats.rewarded++;
-  }
-  updateStats();
 }
-
 function hideHubAds() {
   clearTimeout(state.delayedAnchorTimer);
   $("inline-banner").classList.add("hidden");
@@ -205,28 +286,68 @@ $("close-debug").addEventListener("click", () => $("debug-panel").classList.add(
 $("game-frame").addEventListener("load", handleGameFrameNavigation);
 window.addEventListener("message", (event) => {
   const frameWindow = $("game-frame").contentWindow;
-  if (!state.activeGame || event.source !== frameWindow) return;
+  if (!state.activeGame || event.source !== frameWindow || event.origin !== location.origin) return;
 
   const data = event.data;
-  if (!data || data.type !== "fiverocks:monetization:request") return;
-  if (data.format !== "rewarded" || typeof data.requestId !== "string") {
-    event.source.postMessage({
-      type: "fiverocks:monetization:response",
-      requestId: data.requestId,
-      rewarded: false,
-      reason: "unavailable"
-    }, "*");
+  if (!data) return;
+
+  if (data.type === EVENT_TYPE) {
+    if (data.schemaVersion !== CONTRACT_VERSION
+      || data.gameId !== state.activeGame.id
+      || data.event !== "ad_opportunity"
+      || typeof data.placement !== "string"
+      || typeof data.format !== "string") return;
+
+    recordAdEvent("ad_opportunity", {
+      gameId: data.gameId,
+      format: data.format,
+      placement: data.placement,
+      requestId: data.eventId
+    });
     return;
   }
 
-  showAd("rewarded", {
-    source: event.source,
-    requestId: data.requestId,
-    format: data.format,
-    placement: data.placement
-  });
-});
+  if (data.type !== REQUEST_TYPE) return;
 
+  const isV2 = data.schemaVersion === CONTRACT_VERSION;
+  const isLegacy = data.schemaVersion == null || data.schemaVersion === 1;
+  const gameId = isV2 ? data.gameId : state.activeGame.id;
+  const placement = data.placement === "retry" ? "revive" : data.placement;
+
+  if ((!isV2 && !isLegacy)
+    || gameId !== state.activeGame.id
+    || data.format !== "rewarded"
+    || typeof data.requestId !== "string"
+    || typeof placement !== "string") {
+    const invalidRequest = {
+      source: event.source,
+      origin: event.origin,
+      schemaVersion: isV2 ? CONTRACT_VERSION : 1,
+      requestId: data.requestId,
+      gameId: gameId || state.activeGame.id,
+      format: data.format,
+      placement: placement || "unknown"
+    };
+    recordAdEvent("ad_failed", { ...invalidRequest, reason: "unavailable" });
+    respondToRequest(invalidRequest, false, "unavailable");
+    return;
+  }
+
+  const request = {
+    source: event.source,
+    origin: event.origin,
+    schemaVersion: isV2 ? CONTRACT_VERSION : 1,
+    requestId: data.requestId,
+    gameId,
+    format: data.format,
+    placement
+  };
+
+  // v0.1 clients did not report opportunities separately.
+  if (isLegacy) recordAdEvent("ad_opportunity", request);
+  recordAdEvent("ad_requested", request);
+  showAd("rewarded", request);
+});
 window.addEventListener("popstate", (event) => {
   if (event.state?.labView === "game" && event.state.gameId) {
     const game = state.games.find((item) => item.id === event.state.gameId);
@@ -246,26 +367,33 @@ $("ad-close").addEventListener("click", () => {
   $("ad-overlay").classList.add("hidden");
   const request = state.activeAdRequest;
   const scenario = state.activeAdScenario;
+  const context = state.activeAdContext;
   state.activeAdRequest = null;
   state.activeAdScenario = null;
+  state.activeAdContext = null;
 
-  if (request) {
-    const rewarded = request.format === "rewarded" && scenario === "success";
-    request.source.postMessage({
-      type: "fiverocks:monetization:response",
-      requestId: request.requestId,
-      rewarded,
-      reason: rewarded ? undefined : scenario
-    }, "*");
-  }
+  if (!context) return;
+
+  const rewarded = context.format === "rewarded" && scenario === "success";
+  if (rewarded) recordAdEvent("ad_rewarded", { ...context, reason: "success" });
+  recordAdEvent("ad_closed", {
+    ...context,
+    reason: rewarded ? "success" : scenario
+  });
+  respondToRequest(request, rewarded, rewarded ? "success" : scenario);
 });
 $("anchor-close").addEventListener("click", () => $("anchor-banner").classList.add("hidden"));
 $("banner-mode").addEventListener("change", applyBannerMode);
 $("anchor-delay").addEventListener("change", applyBannerMode);
+$("clear-events").addEventListener("click", () => {
+  state.events = [];
+  renderEvents();
+});
 
 await loadRegistry();
 await loadBuildMetadata();
 renderHub();
 updateStats();
+renderEvents();
 history.replaceState({ labView: "hub" }, "", location.pathname + location.search);
 applyBannerMode();
