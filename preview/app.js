@@ -1,7 +1,7 @@
 const fallbackGames = [
   { id: "hub", name: "Game Hub", runtime: "static", enabled: true },
-  { id: "math-rain", name: "Math Rain", runtime: "vanilla", enabled: true },
-  { id: "memory-game", name: "Memory Game", runtime: "vanilla", enabled: true },
+  { id: "math-rain", name: "Math Rain", runtime: "react", enabled: true },
+  { id: "memory-game", name: "Memory Game", runtime: "react", enabled: true },
   { id: "make-it-max", name: "Make It Max", runtime: "react", enabled: true }
 ];
 
@@ -10,7 +10,9 @@ const state = {
   stats: { opportunities: 0, shown: 0, skipped: 0, rewarded: 0, failed: 0 },
   lastInterstitialAt: 0,
   delayedAnchorTimer: null,
-  activeGame: null
+  activeGame: null,
+  activeAdRequest: null,
+  activeAdScenario: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -107,11 +109,25 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function showAd(kind) {
+async function showAd(kind, request = null) {
+  if (!$("ad-overlay").classList.contains("hidden")) {
+    if (request) {
+      request.source.postMessage({
+        type: "fiverocks:monetization:response",
+        requestId: request.requestId,
+        rewarded: false,
+        reason: "busy"
+      }, "*");
+    }
+    return;
+  }
+
+  state.activeAdRequest = request;
+  state.activeAdScenario = $("scenario").value;
   state.stats.opportunities++;
   updateStats();
 
-  const scenario = $("scenario").value;
+  const scenario = state.activeAdScenario;
   const latency = Number($("latency").value || 0);
 
   if (kind === "interstitial") {
@@ -187,6 +203,30 @@ $("test-rewarded").addEventListener("click", () => showAd("rewarded"));
 $("open-debug").addEventListener("click", () => $("debug-panel").classList.toggle("hidden"));
 $("close-debug").addEventListener("click", () => $("debug-panel").classList.add("hidden"));
 $("game-frame").addEventListener("load", handleGameFrameNavigation);
+window.addEventListener("message", (event) => {
+  const frameWindow = $("game-frame").contentWindow;
+  if (!state.activeGame || event.source !== frameWindow) return;
+
+  const data = event.data;
+  if (!data || data.type !== "fiverocks:monetization:request") return;
+  if (data.format !== "rewarded" || typeof data.requestId !== "string") {
+    event.source.postMessage({
+      type: "fiverocks:monetization:response",
+      requestId: data.requestId,
+      rewarded: false,
+      reason: "unavailable"
+    }, "*");
+    return;
+  }
+
+  showAd("rewarded", {
+    source: event.source,
+    requestId: data.requestId,
+    format: data.format,
+    placement: data.placement
+  });
+});
+
 window.addEventListener("popstate", (event) => {
   if (event.state?.labView === "game" && event.state.gameId) {
     const game = state.games.find((item) => item.id === event.state.gameId);
@@ -202,7 +242,23 @@ window.addEventListener("popstate", (event) => {
   $("hub-view").classList.remove("hidden");
   applyBannerMode();
 });
-$("ad-close").addEventListener("click", () => $("ad-overlay").classList.add("hidden"));
+$("ad-close").addEventListener("click", () => {
+  $("ad-overlay").classList.add("hidden");
+  const request = state.activeAdRequest;
+  const scenario = state.activeAdScenario;
+  state.activeAdRequest = null;
+  state.activeAdScenario = null;
+
+  if (request) {
+    const rewarded = request.format === "rewarded" && scenario === "success";
+    request.source.postMessage({
+      type: "fiverocks:monetization:response",
+      requestId: request.requestId,
+      rewarded,
+      reason: rewarded ? undefined : scenario
+    }, "*");
+  }
+});
 $("anchor-close").addEventListener("click", () => $("anchor-banner").classList.add("hidden"));
 $("banner-mode").addEventListener("change", applyBannerMode);
 $("anchor-delay").addEventListener("change", applyBannerMode);

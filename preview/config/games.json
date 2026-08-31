@@ -14,7 +14,7 @@
       "name": "Math Rain",
       "sourceRepository": "fiverocks-dev/math-rain",
       "publicRepository": "fiverocksgames/math-rain",
-      "runtime": "vanilla",
+      "runtime": "react",
       "enabled": true
     },
     {
@@ -22,7 +22,7 @@
       "name": "Memory Game",
       "sourceRepository": "fiverocks-dev/memory-game",
       "publicRepository": "fiverocksgames/memory-game",
-      "runtime": "vanilla",
+      "runtime": "react",
       "enabled": true
     },
     {

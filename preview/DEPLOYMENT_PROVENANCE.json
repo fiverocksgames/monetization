@@ -1,10 +1,10 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "ea5063b7033675007fbacb1ed635ead35ae8b905",
+    "sourceCommit":  "9666937a4d4920c9f3f6c379a8b200802b3f5da9",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "33351405162",
-    "builtAt":  "2026-08-31T02:40:39.3931076Z",
+    "buildRunId":  "33363973321",
+    "builtAt":  "2026-08-31T06:32:14.1257605Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
@@ -30,11 +30,11 @@
                   },
                   {
                       "path":  "app.js",
-                      "sha256":  "6b3488705f312addc625dbb82ce40f2d027cbb8caae132eb7cf05538c5b75846"
+                      "sha256":  "bd04cc8bf6fb8fd0424de87f9fcd40a770fe6d373cebbf88e84f9aa8004ed0af"
                   },
                   {
                       "path":  "config/games.json",
-                      "sha256":  "b50d0c4a80624d71a0481d464e3fd2aa40b5addadcb74cae371eb878daee772b"
+                      "sha256":  "10deb4524be016b205dad76167e0fc9ae1ac57ba367299e6d027bc5db7b2ec62"
                   },
                   {
                       "path":  "config/lab-inputs.json",
