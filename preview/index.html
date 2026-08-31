@@ -46,8 +46,11 @@
       </div>
     </section>
 
-    <aside id="debug-panel" class="debug hidden">
-      <h2>Monetization Debug</h2>
+    <aside id="debug-panel" class="debug hidden" aria-label="Monetization Debug">
+      <div class="debug-header">
+        <h2>Monetization Debug</h2>
+        <button id="close-debug" class="debug-close" type="button" aria-label="디버그 패널 닫기">×</button>
+      </div>
 
       <label>Hub banner
         <select id="banner-mode">

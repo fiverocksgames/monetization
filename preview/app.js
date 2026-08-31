@@ -9,7 +9,8 @@ const state = {
   games: fallbackGames,
   stats: { opportunities: 0, shown: 0, skipped: 0, rewarded: 0, failed: 0 },
   lastInterstitialAt: 0,
-  delayedAnchorTimer: null
+  delayedAnchorTimer: null,
+  activeGame: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -57,19 +58,45 @@ function renderHub() {
   }
 }
 
-function openGame(game) {
+function openGame(game, { pushHistory = true } = {}) {
+  state.activeGame = game;
   $("hub-view").classList.add("hidden");
   $("game-view").classList.remove("hidden");
   $("current-game").textContent = game.name;
   $("game-frame").src = gameUrl(game);
   hideHubAds();
+
+  if (pushHistory) {
+    history.pushState({ labView: "game", gameId: game.id }, "", `#game=${encodeURIComponent(game.id)}`);
+  }
 }
 
-function showHub() {
+function showHub({ replaceHistory = false } = {}) {
+  state.activeGame = null;
   $("game-frame").src = "about:blank";
   $("game-view").classList.add("hidden");
   $("hub-view").classList.remove("hidden");
   applyBannerMode();
+
+  const method = replaceHistory ? "replaceState" : "pushState";
+  history[method]({ labView: "hub" }, "", location.pathname + location.search);
+}
+
+function handleGameFrameNavigation() {
+  if (!state.activeGame) return;
+
+  try {
+    const frame = $("game-frame");
+    const frameUrl = new URL(frame.contentWindow.location.href);
+    if (frameUrl.href === "about:blank") return;
+
+    const expectedPrefix = new URL(gameUrl(state.activeGame), location.href).pathname;
+    if (!frameUrl.pathname.startsWith(expectedPrefix)) {
+      showHub({ replaceHistory: true });
+    }
+  } catch {
+    showHub({ replaceHistory: true });
+  }
 }
 
 function updateStats() {
@@ -152,12 +179,29 @@ function applyBannerMode() {
   }
 }
 
-$("back-hub").addEventListener("click", showHub);
+$("back-hub").addEventListener("click", () => history.back());
 $("show-interstitial").addEventListener("click", () => showAd("interstitial"));
 $("show-rewarded").addEventListener("click", () => showAd("rewarded"));
 $("test-interstitial").addEventListener("click", () => showAd("interstitial"));
 $("test-rewarded").addEventListener("click", () => showAd("rewarded"));
 $("open-debug").addEventListener("click", () => $("debug-panel").classList.toggle("hidden"));
+$("close-debug").addEventListener("click", () => $("debug-panel").classList.add("hidden"));
+$("game-frame").addEventListener("load", handleGameFrameNavigation);
+window.addEventListener("popstate", (event) => {
+  if (event.state?.labView === "game" && event.state.gameId) {
+    const game = state.games.find((item) => item.id === event.state.gameId);
+    if (game) {
+      openGame(game, { pushHistory: false });
+      return;
+    }
+  }
+
+  state.activeGame = null;
+  $("game-frame").src = "about:blank";
+  $("game-view").classList.add("hidden");
+  $("hub-view").classList.remove("hidden");
+  applyBannerMode();
+});
 $("ad-close").addEventListener("click", () => $("ad-overlay").classList.add("hidden"));
 $("anchor-close").addEventListener("click", () => $("anchor-banner").classList.add("hidden"));
 $("banner-mode").addEventListener("change", applyBannerMode);
@@ -167,4 +211,5 @@ await loadRegistry();
 await loadBuildMetadata();
 renderHub();
 updateStats();
+history.replaceState({ labView: "hub" }, "", location.pathname + location.search);
 applyBannerMode();
