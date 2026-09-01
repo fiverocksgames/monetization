@@ -159,6 +159,7 @@ function respondToRequest(request, rewarded, reason) {
   const response = {
     type: RESPONSE_TYPE,
     requestId: request.requestId,
+    completed: reason === "success",
     rewarded,
     reason
   };
@@ -236,6 +237,16 @@ async function showAd(kind, request = null) {
   if (scenario === "no-fill" || scenario === "load-error") {
     recordAdEvent("ad_failed", { ...context, reason: scenario });
     $("ad-status").textContent = scenario === "no-fill" ? "No Fill" : "Load Error";
+
+    if (kind === "interstitial" && request) {
+      $("ad-overlay").classList.add("hidden");
+      state.activeAdRequest = null;
+      state.activeAdScenario = null;
+      state.activeAdContext = null;
+      respondToRequest(request, false, scenario);
+      return;
+    }
+
     $("ad-close").disabled = false;
     return;
   }
@@ -281,8 +292,18 @@ $("show-interstitial").addEventListener("click", () => showAd("interstitial"));
 $("show-rewarded").addEventListener("click", () => showAd("rewarded"));
 $("test-interstitial").addEventListener("click", () => showAd("interstitial"));
 $("test-rewarded").addEventListener("click", () => showAd("rewarded"));
-$("open-debug").addEventListener("click", () => $("debug-panel").classList.toggle("hidden"));
+$("open-debug").addEventListener("click", () => {
+  $("debug-panel").classList.remove("hidden");
+  $("debug-panel").classList.remove("minimized");
+  $("minimize-debug").textContent = "−";
+  $("minimize-debug").setAttribute("aria-label", "디버그 패널 최소화");
+});
 $("close-debug").addEventListener("click", () => $("debug-panel").classList.add("hidden"));
+$("minimize-debug").addEventListener("click", () => {
+  const minimized = $("debug-panel").classList.toggle("minimized");
+  $("minimize-debug").textContent = minimized ? "□" : "−";
+  $("minimize-debug").setAttribute("aria-label", minimized ? "디버그 패널 복원" : "디버그 패널 최소화");
+});
 $("game-frame").addEventListener("load", handleGameFrameNavigation);
 window.addEventListener("message", (event) => {
   const frameWindow = $("game-frame").contentWindow;
@@ -314,9 +335,13 @@ window.addEventListener("message", (event) => {
   const gameId = isV2 ? data.gameId : state.activeGame.id;
   const placement = data.placement === "retry" ? "revive" : data.placement;
 
+  const formatAllowed = isV2
+    ? data.format === "rewarded" || data.format === "interstitial"
+    : data.format === "rewarded";
+
   if ((!isV2 && !isLegacy)
     || gameId !== state.activeGame.id
-    || data.format !== "rewarded"
+    || !formatAllowed
     || typeof data.requestId !== "string"
     || typeof placement !== "string") {
     const invalidRequest = {
@@ -346,7 +371,7 @@ window.addEventListener("message", (event) => {
   // v0.1 clients did not report opportunities separately.
   if (isLegacy) recordAdEvent("ad_opportunity", request);
   recordAdEvent("ad_requested", request);
-  showAd("rewarded", request);
+  showAd(data.format, request);
 });
 window.addEventListener("popstate", (event) => {
   if (event.state?.labView === "game" && event.state.gameId) {
@@ -385,6 +410,33 @@ $("ad-close").addEventListener("click", () => {
 $("anchor-close").addEventListener("click", () => $("anchor-banner").classList.add("hidden"));
 $("banner-mode").addEventListener("change", applyBannerMode);
 $("anchor-delay").addEventListener("change", applyBannerMode);
+$("copy-events").addEventListener("click", async () => {
+  const payload = [
+    "FiveRocks Monetization Lab Debug Log",
+    JSON.stringify({ stats: state.stats }),
+    ...state.events.map((event) => JSON.stringify(event))
+  ].join("\n");
+
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(payload);
+    copied = true;
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = payload;
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.append(textarea);
+    textarea.select();
+    copied = document.execCommand("copy");
+    textarea.remove();
+  }
+
+  const button = $("copy-events");
+  const original = "Copy";
+  button.textContent = copied ? "Copied" : "Copy failed";
+  window.setTimeout(() => { button.textContent = original; }, 1200);
+});
 $("clear-events").addEventListener("click", () => {
   state.events = [];
   renderEvents();
