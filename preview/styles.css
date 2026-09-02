@@ -3,3 +3,16 @@
 .event-log-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 6px;font-size:11px;color:#b6bdc9}.event-log-header button{padding:4px 7px;font-size:10px}.debug .event-log{max-height:170px;white-space:pre-wrap;word-break:break-word}
 
 .debug-header-actions{display:flex;gap:6px}.debug-header-button{width:30px;height:30px;padding:0;border-radius:50%;font-size:18px;line-height:1}.debug.minimized{width:auto;max-height:none;overflow:hidden;padding:8px 10px}.debug.minimized .debug-header{position:static;margin:0;padding:0}.debug.minimized>:not(.debug-header){display:none!important}.event-log-actions{display:flex;gap:5px}
+
+.open-debug{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}.debug-icon{line-height:1}
+@media(max-width:640px){
+  header{align-items:center;padding:10px 12px}
+  header>div:first-child{min-width:0}
+  h1{font-size:17px;margin-bottom:3px}
+  header p{font-size:12px;line-height:1.35}
+  .header-actions{flex-direction:row;align-items:center;gap:6px}
+  .build-id{font-size:10px;padding:4px 6px;max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .open-debug{width:34px;height:34px;padding:0;justify-content:center;border-radius:10px}
+  .open-debug .debug-label{display:none}
+  .open-debug .debug-icon{font-size:18px}
+}
