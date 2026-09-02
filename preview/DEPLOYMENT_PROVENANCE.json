@@ -1,10 +1,10 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "027b63ad129155cec6492f7260d741b71f6d96e5",
+    "sourceCommit":  "f024744f02ec9672cd174d62e61f7f02651f0e2c",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "33588471746",
-    "builtAt":  "2026-09-02T03:49:30.5831274Z",
+    "buildRunId":  "33603330296",
+    "builtAt":  "2026-09-02T07:27:36.3459021Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
@@ -30,7 +30,7 @@
                   },
                   {
                       "path":  "app.js",
-                      "sha256":  "032302137717755994a35c1b448250da9938d18b60a6281315f662cbd4c6efc1"
+                      "sha256":  "e4751a71aa7d0bd3c430e8c0e2d6fcc58f0589d597a99ca1cc064b09f971cd5d"
                   },
                   {
                       "path":  "config/games.json",
@@ -42,7 +42,7 @@
                   },
                   {
                       "path":  "config/monetization.json",
-                      "sha256":  "ce534810b0406efa3ba4b8edb05a6bce6e442415631a240825c76b844fc0c45f"
+                      "sha256":  "eaacb90cf09b5c8abe1b009dce91aca01693bcf2a8f81338cca212c596ab9461"
                   },
                   {
                       "path":  "games/make-it-max/assets/index-BmjjUSQk.js",
@@ -170,7 +170,7 @@
                   },
                   {
                       "path":  "index.html",
-                      "sha256":  "7c78bac730a8f1ee35cb7cbedb9dc26e21c9bf8deac6debfbb183c5d1aab8d94"
+                      "sha256":  "b01fc9572fc25465f59c5af535494ea3e0f19f381c02951461f13d8d8b8e51ad"
                   },
                   {
                       "path":  "styles.css",

@@ -15,7 +15,7 @@
     "level_complete": {
       "format": "interstitial",
       "enabled": true,
-      "cooldownSeconds": 180
+      "cooldownSeconds": 300
     },
     "game_over": {
       "format": "interstitial",

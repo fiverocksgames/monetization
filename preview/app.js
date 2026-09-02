@@ -35,6 +35,18 @@ async function loadRegistry() {
   }
 }
 
+async function loadMonetizationConfig() {
+  try {
+    const response = await fetch("./config/monetization.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("monetization config unavailable");
+    const config = await response.json();
+    const cooldownSeconds = Number(config?.placements?.level_complete?.cooldownSeconds);
+    if (Number.isFinite(cooldownSeconds) && cooldownSeconds >= 0) {
+      $("cooldown").value = String(cooldownSeconds);
+    }
+  } catch {}
+}
+
 async function loadBuildMetadata() {
   try {
     const response = await fetch("./DEPLOYMENT_PROVENANCE.json", { cache: "no-store" });
@@ -443,6 +455,7 @@ $("clear-events").addEventListener("click", () => {
 });
 
 await loadRegistry();
+await loadMonetizationConfig();
 await loadBuildMetadata();
 renderHub();
 updateStats();
