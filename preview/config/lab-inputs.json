@@ -3,11 +3,11 @@
   "components": {
     "math-rain": {
       "repository": "fiverocks-dev/math-rain",
-      "sourceCommit": "9d865336253e78bbd13bec50b09d6d56ceeeca06"
+      "sourceCommit": "754ef91d36177a3e8fbd49353d0025a9cdc62c64"
     },
     "memory-game": {
       "repository": "fiverocks-dev/memory-game",
-      "sourceCommit": "31fa8af6594d46e3640e4117e33603614f5b2b07"
+      "sourceCommit": "f97ebaf28ee6c61609ee7d1ffcfc19bbf3878a26"
     },
     "make-it-max": {
       "repository": "fiverocks-dev/make-it-max",
