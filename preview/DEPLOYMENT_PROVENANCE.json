@@ -1,26 +1,35 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "bfbc052930b33618d95e8be880c23cb5a202c47f",
+    "sourceCommit":  "c6faa77295ad01b6a90f858c115b58b0c4432aaf",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "33719858978",
-    "builtAt":  "2026-09-03T05:40:53.4666411Z",
+    "buildRunId":  "34020149876",
+    "builtAt":  "2026-09-06T08:00:23.9530740Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
                            "id":  "math-rain",
                            "sourceRepository":  "fiverocks-dev/math-rain",
-                           "sourceCommit":  "754ef91d36177a3e8fbd49353d0025a9cdc62c64"
+                           "sourceCommit":  "754ef91d36177a3e8fbd49353d0025a9cdc62c64",
+                           "artifactKind":  "dist"
                        },
                        {
                            "id":  "memory-game",
                            "sourceRepository":  "fiverocks-dev/memory-game",
-                           "sourceCommit":  "f97ebaf28ee6c61609ee7d1ffcfc19bbf3878a26"
+                           "sourceCommit":  "f97ebaf28ee6c61609ee7d1ffcfc19bbf3878a26",
+                           "artifactKind":  "dist"
                        },
                        {
                            "id":  "make-it-max",
                            "sourceRepository":  "fiverocks-dev/make-it-max",
-                           "sourceCommit":  "1394ca12e3208f9c2518c20634ad654d5d652154"
+                           "sourceCommit":  "1394ca12e3208f9c2518c20634ad654d5d652154",
+                           "artifactKind":  "dist"
+                       },
+                       {
+                           "id":  "math-fighter",
+                           "sourceRepository":  "fiverocks-dev/math-fighter",
+                           "sourceCommit":  "79a5f3bcc656eb2920036da8c4e9092013d8cb95",
+                           "artifactKind":  "unity-webgl"
                        }
                    ],
     "files":  [
@@ -34,11 +43,11 @@
                   },
                   {
                       "path":  "config/games.json",
-                      "sha256":  "10deb4524be016b205dad76167e0fc9ae1ac57ba367299e6d027bc5db7b2ec62"
+                      "sha256":  "1624883391bb46560117ba50c48cafcf5e7a224e8ec447d7155fb47beabb834a"
                   },
                   {
                       "path":  "config/lab-inputs.json",
-                      "sha256":  "8bc27fe49322623a4fb713a5019d1a487b55ce4d27222225b026d0f1bc8dc64a"
+                      "sha256":  "e0fdfbf1447b01d50f0a6c3da93fb6783b3f84885af5c325b69d61e971e900f9"
                   },
                   {
                       "path":  "config/monetization.json",
@@ -55,6 +64,78 @@
                   {
                       "path":  "games/make-it-max/index.html",
                       "sha256":  "2903a805a8599b94c2e07ede86ad4a69b651b73c4a6f03683067b48bf1dbcf78"
+                  },
+                  {
+                      "path":  "games/math-fighter/.nojekyll",
+                      "sha256":  "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+                  },
+                  {
+                      "path":  "games/math-fighter/Build/webgl.data",
+                      "sha256":  "6ef066d4e28da7ba2492b3a9bc10fff5c87c26ad5c77da01505dabc5a2e230a7"
+                  },
+                  {
+                      "path":  "games/math-fighter/Build/webgl.framework.js",
+                      "sha256":  "41f1462000836b2cf3b4aa5b615eb2094d036e81b6aa8aaf0dbab3de785fa1e3"
+                  },
+                  {
+                      "path":  "games/math-fighter/Build/webgl.loader.js",
+                      "sha256":  "95d413ec942c6764ee89174a13da7a4c7f80567f6a4fb43992a6e8273c3b93d2"
+                  },
+                  {
+                      "path":  "games/math-fighter/Build/webgl.wasm",
+                      "sha256":  "65e35ab0e48c21828f08297e7b61085823e6a30950f5079f67a677c34d31a979"
+                  },
+                  {
+                      "path":  "games/math-fighter/index.html",
+                      "sha256":  "eee216153a2b90a051f1d28faee976e4f30ea1e10e3169ec64769142652fd431"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/favicon.ico",
+                      "sha256":  "9c13beb90ee8f70580d52a21d5233970d1c89e71e4a34a462c22610941c3c77f"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/fullscreen-button.png",
+                      "sha256":  "21221581673a54b8139d408d4a3f8d2b879e86827d4b6fc53b995ff7a99ee3e9"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/MemoryProfiler.png",
+                      "sha256":  "0ce87be20d0c24ab6cb73b57de2004da261cc2a641e69319c6ae3fe11fc85483"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/progress-bar-empty-dark.png",
+                      "sha256":  "bbee7131afe8a3365906240d89184dc86234c119467f390bc4bc6802328fdb4d"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/progress-bar-empty-light.png",
+                      "sha256":  "143696c060ad43d6c30f19ff5f49000927a139a2a1e4c9f45fafaa2b90d7d2be"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/progress-bar-full-dark.png",
+                      "sha256":  "3306a6244dcb3926fca38a28e3ced589df8ff1beed955eb17c0bbf01c918bc62"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/progress-bar-full-light.png",
+                      "sha256":  "12395ea785480c5cdf12fade6e6cbf49666d5bb1cef7240c113dbcba6bdc5c87"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/style.css",
+                      "sha256":  "53080c2b597e94c25ffccbb95dd6de27f71159e18623cc33b375c203233f5a20"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/unity-logo-dark.png",
+                      "sha256":  "c1b72d26c096487dabc948b54bc203f8dac7ed4e3f5733918798e858acb4b159"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/unity-logo-light.png",
+                      "sha256":  "002990aea0d946833cadc1519d5b7e50a4570bd537a0517dd79a59d3eec84da7"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/webgl-logo.png",
+                      "sha256":  "b30c3af2a4538c6edf5f2411953760641dfa257f2a4cc5b88d671aa243b1f12f"
+                  },
+                  {
+                      "path":  "games/math-fighter/TemplateData/webmemd-icon.png",
+                      "sha256":  "c56f5494640cedda273aad38d58e6ab9da625d5b3f4d875c0ff92c6192a569c2"
                   },
                   {
                       "path":  "games/math-rain/assets/index-1aZ3-YxA.js",

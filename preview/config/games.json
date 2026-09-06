@@ -39,7 +39,7 @@
       "sourceRepository": "fiverocks-dev/math-fighter",
       "publicRepository": "fiverocksgames/math-fighter",
       "runtime": "unity-webgl",
-      "enabled": false
+      "enabled": true
     },
     {
       "id": "math-defender",

@@ -1,0 +1,83 @@
+﻿{
+    "schemaVersion":  1,
+    "sourceRepository":  "fiverocks-dev/math-fighter",
+    "sourceCommit":  "79a5f3bcc656eb2920036da8c4e9092013d8cb95",
+    "buildWorkflow":  "WebGL Production Build",
+    "buildRunId":  "33965209542",
+    "builtAt":  "2026-09-05T22:14:54.7333210Z",
+    "toolchain":  "Unity 2022.3.62f3 WebGL",
+    "files":  [
+                  {
+                      "path":  ".nojekyll",
+                      "sha256":  "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"
+                  },
+                  {
+                      "path":  "Build/webgl.data",
+                      "sha256":  "6ef066d4e28da7ba2492b3a9bc10fff5c87c26ad5c77da01505dabc5a2e230a7"
+                  },
+                  {
+                      "path":  "Build/webgl.framework.js",
+                      "sha256":  "41f1462000836b2cf3b4aa5b615eb2094d036e81b6aa8aaf0dbab3de785fa1e3"
+                  },
+                  {
+                      "path":  "Build/webgl.loader.js",
+                      "sha256":  "95d413ec942c6764ee89174a13da7a4c7f80567f6a4fb43992a6e8273c3b93d2"
+                  },
+                  {
+                      "path":  "Build/webgl.wasm",
+                      "sha256":  "65e35ab0e48c21828f08297e7b61085823e6a30950f5079f67a677c34d31a979"
+                  },
+                  {
+                      "path":  "index.html",
+                      "sha256":  "eee216153a2b90a051f1d28faee976e4f30ea1e10e3169ec64769142652fd431"
+                  },
+                  {
+                      "path":  "TemplateData/favicon.ico",
+                      "sha256":  "9c13beb90ee8f70580d52a21d5233970d1c89e71e4a34a462c22610941c3c77f"
+                  },
+                  {
+                      "path":  "TemplateData/fullscreen-button.png",
+                      "sha256":  "21221581673a54b8139d408d4a3f8d2b879e86827d4b6fc53b995ff7a99ee3e9"
+                  },
+                  {
+                      "path":  "TemplateData/MemoryProfiler.png",
+                      "sha256":  "0ce87be20d0c24ab6cb73b57de2004da261cc2a641e69319c6ae3fe11fc85483"
+                  },
+                  {
+                      "path":  "TemplateData/progress-bar-empty-dark.png",
+                      "sha256":  "bbee7131afe8a3365906240d89184dc86234c119467f390bc4bc6802328fdb4d"
+                  },
+                  {
+                      "path":  "TemplateData/progress-bar-empty-light.png",
+                      "sha256":  "143696c060ad43d6c30f19ff5f49000927a139a2a1e4c9f45fafaa2b90d7d2be"
+                  },
+                  {
+                      "path":  "TemplateData/progress-bar-full-dark.png",
+                      "sha256":  "3306a6244dcb3926fca38a28e3ced589df8ff1beed955eb17c0bbf01c918bc62"
+                  },
+                  {
+                      "path":  "TemplateData/progress-bar-full-light.png",
+                      "sha256":  "12395ea785480c5cdf12fade6e6cbf49666d5bb1cef7240c113dbcba6bdc5c87"
+                  },
+                  {
+                      "path":  "TemplateData/style.css",
+                      "sha256":  "53080c2b597e94c25ffccbb95dd6de27f71159e18623cc33b375c203233f5a20"
+                  },
+                  {
+                      "path":  "TemplateData/unity-logo-dark.png",
+                      "sha256":  "c1b72d26c096487dabc948b54bc203f8dac7ed4e3f5733918798e858acb4b159"
+                  },
+                  {
+                      "path":  "TemplateData/unity-logo-light.png",
+                      "sha256":  "002990aea0d946833cadc1519d5b7e50a4570bd537a0517dd79a59d3eec84da7"
+                  },
+                  {
+                      "path":  "TemplateData/webgl-logo.png",
+                      "sha256":  "b30c3af2a4538c6edf5f2411953760641dfa257f2a4cc5b88d671aa243b1f12f"
+                  },
+                  {
+                      "path":  "TemplateData/webmemd-icon.png",
+                      "sha256":  "c56f5494640cedda273aad38d58e6ab9da625d5b3f4d875c0ff92c6192a569c2"
+                  }
+              ]
+}
