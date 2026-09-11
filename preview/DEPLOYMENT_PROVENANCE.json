@@ -1,10 +1,10 @@
 ﻿{
     "schemaVersion":  1,
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "c6faa77295ad01b6a90f858c115b58b0c4432aaf",
+    "sourceCommit":  "d07a8ba9a21bbb80175fcdb1b98188bb2fbd4028",
     "buildWorkflow":  "Build Pinned Monetization Lab",
-    "buildRunId":  "34020149876",
-    "builtAt":  "2026-09-06T08:00:23.9530740Z",
+    "buildRunId":  "34555783606",
+    "builtAt":  "2026-09-11T02:44:57.9198553Z",
     "runnerName":  "FRD-DESKTOP-01",
     "components":  [
                        {
