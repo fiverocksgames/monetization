@@ -2,12 +2,12 @@
     "schemaVersion":  1,
     "channel":  "ephemeral-pr-preview",
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "2ec2f9cbd4c8a30fec891ab13c0e4c819b083a03",
+    "sourceCommit":  "afda7541c073e775b36eef45106de87217f74bfa",
     "pullRequest":  15,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "35294099378",
+    "buildRunId":  "35294920538",
     "runnerName":  "FRD-LAPTOP-01",
-    "builtAt":  "2026-09-18T01:08:38.1299964Z",
+    "builtAt":  "2026-09-18T01:20:45.3038642Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
@@ -32,7 +32,7 @@
                   },
                   {
                       "path":  "h5-ads/index.html",
-                      "sha256":  "cd2d415fe2f029f67eac727656f9dbebe971938716b6b9e164d2fd4a801ea545"
+                      "sha256":  "ce0d2af7b1a0b46a92ca83043f71614b453626fc6764eb6826c8323945755d7a"
                   },
                   {
                       "path":  "index.html",

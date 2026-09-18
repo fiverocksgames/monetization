@@ -6,12 +6,7 @@
   <title>FiveRocks H5 Ads Asteroid Probe</title>
   <meta name="color-scheme" content="dark">
 
-  <!-- Development test mode only. This page must never use a production publisher id. -->
-  <script
-    async
-    data-adbreak-test="on"
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456"
-    crossorigin="anonymous"></script>
+  <!-- Development test mode only. Publisher id is injected at runtime; no production id is committed here. -->
   <script>
     window.adsbygoogle = window.adsbygoogle || [];
     window.adBreak = window.adConfig = function (options) {
@@ -256,14 +251,15 @@
     <aside class="panel side">
       <h2>H5 Ads Probe</h2>
       <div class="ad-state">
-        <div class="pill"><span>Google API</span><strong id="apiState">Loading</strong></div>
+        <div class="pill"><span>Google API</span><strong id="apiState">Configuring</strong></div>
+        <div class="pill"><span>Publisher</span><strong id="publisherState">Not set</strong></div>
         <div class="pill"><span>Ad state</span><strong id="adState">Idle</strong></div>
         <div class="pill"><span>Reward evidence</span><strong id="rewardState">None</strong></div>
         <div class="pill"><span>Audio</span><strong id="audioState">Off</strong></div>
       </div>
       <div id="log" role="log" aria-live="polite"></div>
       <div class="footer-note">
-        Development test mode only (<code>data-adbreak-test="on"</code>). Reward is authorized only by <code>adViewed</code>. Dismiss/failure never grants a revive. Banner parity is intentionally not simulated.
+        Development test mode only (<code>data-adbreak-test="on"</code>). Supply a test-capable publisher id via <code>?publisherId=ca-pub-...</code> or <code>window.H5_ADS_PROBE_CONFIG.publisherId</code>. Reward is authorized only by <code>adViewed</code>. Dismiss/failure never grants a revive.
       </div>
     </aside>
   </div>
@@ -290,6 +286,7 @@
   const reviveValue = document.getElementById('reviveValue');
   const gameStateValue = document.getElementById('gameStateValue');
   const apiState = document.getElementById('apiState');
+  const publisherState = document.getElementById('publisherState');
   const adState = document.getElementById('adState');
   const rewardState = document.getElementById('rewardState');
   const audioState = document.getElementById('audioState');
@@ -308,6 +305,9 @@
   let animationId = 0;
   let pausedByAd = false;
   let apiReady = false;
+  let sdkLoaded = false;
+  let sdkLoadFailed = false;
+  let publisherId = '';
   let adBusy = false;
   let rewardViewed = false;
   let rewardApplied = false;
@@ -325,6 +325,129 @@
     logEl.textContent += `${line}\n`;
     logEl.scrollTop = logEl.scrollHeight;
     console.log('[H5 Ads Probe]', message, data === undefined ? '' : data);
+  }
+
+  function readPublisherId() {
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = (params.get('publisherId') || '').trim();
+    const fromGlobal = (
+      window.H5_ADS_PROBE_CONFIG &&
+      typeof window.H5_ADS_PROBE_CONFIG.publisherId === 'string'
+        ? window.H5_ADS_PROBE_CONFIG.publisherId
+        : ''
+    ).trim();
+    return fromQuery || fromGlobal;
+  }
+
+  function isValidPublisherId(value) {
+    return /^ca-pub-\d{16}$/.test(value);
+  }
+
+  function loadGoogleH5Ads() {
+    publisherId = readPublisherId();
+
+    if (!publisherId) {
+      apiState.textContent = 'Config required';
+      publisherState.textContent = 'Missing';
+      log('config:publisherId missing', {
+        hint: '?publisherId=ca-pub-XXXXXXXXXXXXXXXX'
+      });
+      return;
+    }
+
+    if (!isValidPublisherId(publisherId)) {
+      apiState.textContent = 'Config invalid';
+      publisherState.textContent = 'Invalid';
+      log('config:publisherId invalid', {
+        length: publisherId.length,
+        prefix: publisherId.slice(0, 7)
+      });
+      return;
+    }
+
+    publisherState.textContent = publisherId.slice(0, 11) + '…' + publisherId.slice(-4);
+    log('config:publisherId accepted', {
+      masked: publisherState.textContent,
+      source: new URLSearchParams(window.location.search).has('publisherId') ? 'query' : 'global'
+    });
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.dataset.adbreakTest = 'on';
+    script.crossOrigin = 'anonymous';
+    script.src =
+      'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' +
+      encodeURIComponent(publisherId);
+
+    script.addEventListener('load', () => {
+      sdkLoaded = true;
+      log('sdk:load', { srcHost: 'pagead2.googlesyndication.com' });
+    });
+
+    script.addEventListener('error', () => {
+      sdkLoadFailed = true;
+      apiState.textContent = 'SDK load failed';
+      log('sdk:error', { srcHost: 'pagead2.googlesyndication.com' });
+    });
+
+    document.head.appendChild(script);
+
+    try {
+      window.adConfig({
+        preloadAdBreaks: 'on',
+        sound: 'on',
+        onReady: () => {
+          apiReady = true;
+          apiState.textContent = 'Ready';
+          log('adConfig:onReady', { sdkLoaded });
+        }
+      });
+      apiState.textContent = 'Waiting ready';
+      log('adConfig:requested', { sdkLoaded });
+    } catch (error) {
+      apiState.textContent = 'Unavailable';
+      log('adConfig:error', { message: String(error) });
+    }
+
+    window.setTimeout(() => {
+      if (!apiReady) {
+        apiState.textContent = sdkLoadFailed ? 'SDK load failed' : 'Not ready';
+        log('adConfig:onReady timeout', {
+          seconds: 10,
+          sdkLoaded,
+          sdkLoadFailed,
+          publisherConfigured: true
+        });
+      }
+    }, 10000);
+  }
+
+  function rejectAdRequest(format) {
+    const reason = !publisherId
+      ? 'publisher-id-missing'
+      : sdkLoadFailed
+        ? 'sdk-load-failed'
+        : !sdkLoaded
+          ? 'sdk-not-loaded'
+          : 'api-not-ready';
+
+    adState.textContent = 'Blocked';
+    log('ad:request blocked', { format, reason, apiReady, sdkLoaded, sdkLoadFailed });
+
+    if (format === 'rewarded') {
+      rewardState.textContent = 'Blocked · no reward';
+      setGameState('gameover');
+      showOverlay(
+        'Rewarded ad unavailable',
+        'Google H5 Ads is not ready. No revive was granted.',
+        'Restart',
+        startRound,
+        null,
+        null
+      );
+    } else {
+      showCompletedResult('Google H5 Ads is not ready; interstitial request was blocked.');
+    }
   }
 
   function setGameState(next) {
@@ -512,6 +635,10 @@
   function requestInterstitial() {
     ensureAudio();
     if (adBusy) return;
+    if (!apiReady) {
+      rejectAdRequest('interstitial');
+      return;
+    }
     adBusy = true;
     adState.textContent = 'Interstitial request';
     setGameState('waitingAd');
@@ -545,6 +672,10 @@
   function requestRewarded() {
     ensureAudio();
     if (adBusy || revives >= MAX_REVIVES) return;
+    if (!apiReady) {
+      rejectAdRequest('rewarded');
+      return;
+    }
     adBusy = true;
     rewardViewed = false;
     rewardApplied = false;
@@ -773,29 +904,13 @@
   primaryButton.onclick = startRound;
   secondaryButton.hidden = true;
 
-  log('probe:boot');
-  try {
-    window.adConfig({
-      preloadAdBreaks: 'on',
-      sound: 'on',
-      onReady: () => {
-        apiReady = true;
-        apiState.textContent = 'Ready';
-        log('adConfig:onReady');
-      }
-    });
-    log('adConfig:requested');
-  } catch (error) {
-    apiState.textContent = 'Unavailable';
-    log('adConfig:error', { message: String(error) });
-  }
-
-  window.setTimeout(() => {
-    if (!apiReady) {
-      apiState.textContent = 'Not ready';
-      log('adConfig:onReady timeout', { seconds: 10 });
-    }
-  }, 10000);
+  log('probe:boot', {
+    origin: window.location.origin,
+    path: window.location.pathname,
+    queryKeys: Array.from(new URLSearchParams(window.location.search).keys()),
+    userAgent: navigator.userAgent
+  });
+  loadGoogleH5Ads();
 
   draw();
   updateHud();
