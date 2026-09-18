@@ -235,6 +235,17 @@
       max-height: 58vh;
       border-radius: 10px;
       background: #000;
+      cursor: pointer;
+    }
+
+    .mock-ad-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 460px) {
+      .mock-ad-actions { grid-template-columns: 1fr; }
     }
 
     .mock-ad-countdown {
@@ -320,7 +331,7 @@
       </div>
       <div id="log" role="log" aria-live="polite"></div>
       <div class="footer-note">
-        Development test mode only. Without a Publisher ID, the probe uses the bundled mock video ad. With a test-capable Publisher ID, Google H5 Ads uses <code>data-adbreak-test="on"</code>. Reward is granted only after observed Google <code>adViewed</code> or the mock video reaches its natural end.
+        Development test mode only. Without a Publisher ID, the probe uses the bundled mock video ad. Mock click-through is enabled only when an advertiser URL is configured. Clicking the creative never grants reward; Rewarded unlocks only after the video reaches its natural end.
       </div>
     </aside>
   </div>
@@ -336,7 +347,10 @@
       </video>
     </div>
     <p class="mock-ad-countdown" id="mockAdCountdown">Preparing…</p>
-    <button class="primary" id="mockAdAction" type="button" disabled>Continue</button>
+    <div class="mock-ad-actions">
+      <button id="mockAdClickThrough" type="button" disabled>Advertiser link pending</button>
+      <button class="primary" id="mockAdAction" type="button" disabled>Continue</button>
+    </div>
   </div>
 </div>
 
@@ -370,6 +384,7 @@
   const mockAdTitle = document.getElementById('mockAdTitle');
   const mockAdVideo = document.getElementById('mockAdVideo');
   const mockAdCountdown = document.getElementById('mockAdCountdown');
+  const mockAdClickThrough = document.getElementById('mockAdClickThrough');
   const mockAdAction = document.getElementById('mockAdAction');
 
   const input = { left: false, right: false };
@@ -390,6 +405,7 @@
   let publisherId = '';
   let providerMode = 'mock';
   let mockVideoCompleted = false;
+  let mockClickUrl = '';
   let adBusy = false;
   let rewardViewed = false;
   let rewardApplied = false;
@@ -423,6 +439,68 @@
 
   function isValidPublisherId(value) {
     return /^ca-pub-\d{16}$/.test(value);
+  }
+
+  function readMockClickUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = (params.get('mockClickUrl') || '').trim();
+    const fromGlobal = (
+      window.H5_ADS_PROBE_CONFIG &&
+      typeof window.H5_ADS_PROBE_CONFIG.mockClickUrl === 'string'
+        ? window.H5_ADS_PROBE_CONFIG.mockClickUrl
+        : ''
+    ).trim();
+    return fromQuery || fromGlobal;
+  }
+
+  function normalizeMockClickUrl(value) {
+    if (!value) return '';
+    try {
+      const url = new URL(value, window.location.href);
+      return ['http:', 'https:'].includes(url.protocol) ? url.href : '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function configureMockClickThrough() {
+    const configured = readMockClickUrl();
+    mockClickUrl = normalizeMockClickUrl(configured);
+
+    if (!configured) {
+      mockAdClickThrough.disabled = true;
+      mockAdClickThrough.textContent = 'Advertiser link pending';
+      log('mock:clickThrough config missing');
+      return;
+    }
+
+    if (!mockClickUrl) {
+      mockAdClickThrough.disabled = true;
+      mockAdClickThrough.textContent = 'Advertiser link invalid';
+      log('mock:clickThrough config invalid');
+      return;
+    }
+
+    mockAdClickThrough.disabled = false;
+    mockAdClickThrough.textContent = 'Visit advertiser';
+    log('mock:clickThrough configured', {
+      host: new URL(mockClickUrl).host,
+      source: new URLSearchParams(window.location.search).has('mockClickUrl') ? 'query' : 'global'
+    });
+  }
+
+  function openMockClickThrough(source) {
+    if (!mockClickUrl) {
+      log('mock:clickThrough blocked', { source, reason: 'url-not-configured' });
+      return;
+    }
+
+    const opened = window.open(mockClickUrl, '_blank', 'noopener,noreferrer');
+    log('mock:clickThrough', {
+      source,
+      host: new URL(mockClickUrl).host,
+      opened: Boolean(opened)
+    });
   }
 
   function loadGoogleH5Ads() {
@@ -560,6 +638,7 @@
     resetMockVideo();
 
     mockAdTitle.textContent = rewarded ? 'Mock Rewarded Ad' : 'Mock Interstitial Ad';
+    configureMockClickThrough();
     mockAdCountdown.textContent = rewarded
       ? 'Watch the full video to unlock the revive.'
       : 'Watch the mock ad video to continue.';
@@ -615,6 +694,9 @@
 
       resetMockVideo();
     };
+
+    mockAdVideo.onclick = () => openMockClickThrough('video');
+    mockAdClickThrough.onclick = () => openMockClickThrough('cta');
 
     mockAdAction.onclick = () => {
       if (mockAdAction.disabled || !mockVideoCompleted) return;
