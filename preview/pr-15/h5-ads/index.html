@@ -360,6 +360,7 @@
 
   const ROUND_SECONDS = 20;
   const MAX_REVIVES = 1;
+  const DEFAULT_MOCK_CLICK_URL = 'https://fiverocksgames.github.io/game-hub/';
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const stage = document.getElementById('stage');
@@ -450,7 +451,7 @@
         ? window.H5_ADS_PROBE_CONFIG.mockClickUrl
         : ''
     ).trim();
-    return fromQuery || fromGlobal;
+    return fromQuery || fromGlobal || DEFAULT_MOCK_CLICK_URL;
   }
 
   function normalizeMockClickUrl(value) {
@@ -485,7 +486,15 @@
     mockAdClickThrough.textContent = 'Visit advertiser';
     log('mock:clickThrough configured', {
       host: new URL(mockClickUrl).host,
-      source: new URLSearchParams(window.location.search).has('mockClickUrl') ? 'query' : 'global'
+      source: new URLSearchParams(window.location.search).has('mockClickUrl')
+        ? 'query'
+        : (
+          window.H5_ADS_PROBE_CONFIG &&
+          typeof window.H5_ADS_PROBE_CONFIG.mockClickUrl === 'string' &&
+          window.H5_ADS_PROBE_CONFIG.mockClickUrl.trim()
+            ? 'global'
+            : 'default'
+        )
     });
   }
 
