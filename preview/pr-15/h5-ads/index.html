@@ -228,9 +228,13 @@
       padding: 20px;
     }
 
-    .mock-ad-creative strong {
-      font-size: clamp(24px, 8vw, 42px);
-      letter-spacing: -.04em;
+    .mock-ad-creative video {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 58vh;
+      border-radius: 10px;
+      background: #000;
     }
 
     .mock-ad-countdown {
@@ -316,7 +320,7 @@
       </div>
       <div id="log" role="log" aria-live="polite"></div>
       <div class="footer-note">
-        Development test mode only. Without a Publisher ID, the probe uses an in-page mock ad provider. With a test-capable Publisher ID, Google H5 Ads uses <code>data-adbreak-test="on"</code>. Reward is granted only after observed Google <code>adViewed</code> or completed mock rewarded viewing.
+        Development test mode only. Without a Publisher ID, the probe uses the bundled mock video ad. With a test-capable Publisher ID, Google H5 Ads uses <code>data-adbreak-test="on"</code>. Reward is granted only after observed Google <code>adViewed</code> or the mock video reaches its natural end.
       </div>
     </aside>
   </div>
@@ -327,7 +331,9 @@
     <div class="mock-ad-badge">Mock Ad · Development Only</div>
     <h2 id="mockAdTitle">FiveRocks Mock Ad</h2>
     <div class="mock-ad-creative">
-      <strong id="mockAdCreativeText">YOUR AD HERE</strong>
+      <video id="mockAdVideo" playsinline preload="metadata">
+        <source src="assets/mock/265065.mp4" type="video/mp4">
+      </video>
     </div>
     <p class="mock-ad-countdown" id="mockAdCountdown">Preparing…</p>
     <button class="primary" id="mockAdAction" type="button" disabled>Continue</button>
@@ -362,7 +368,7 @@
   const logEl = document.getElementById('log');
   const mockAd = document.getElementById('mockAd');
   const mockAdTitle = document.getElementById('mockAdTitle');
-  const mockAdCreativeText = document.getElementById('mockAdCreativeText');
+  const mockAdVideo = document.getElementById('mockAdVideo');
   const mockAdCountdown = document.getElementById('mockAdCountdown');
   const mockAdAction = document.getElementById('mockAdAction');
 
@@ -383,7 +389,7 @@
   let sdkLoadFailed = false;
   let publisherId = '';
   let providerMode = 'mock';
-  let mockTimer = 0;
+  let mockVideoCompleted = false;
   let adBusy = false;
   let rewardViewed = false;
   let rewardApplied = false;
@@ -504,98 +510,139 @@
     }, 10000);
   }
 
-  function clearMockTimer() {
-    if (mockTimer) {
-      window.clearInterval(mockTimer);
-      mockTimer = 0;
-    }
+  function resetMockVideo() {
+    mockVideoCompleted = false;
+    mockAdVideo.pause();
+    try { mockAdVideo.currentTime = 0; } catch (_) {}
+    mockAdVideo.onended = null;
+    mockAdVideo.onerror = null;
   }
 
-  function finishMockAd(format, viewed) {
-    clearMockTimer();
+  function finishMockAd(format) {
+    if (!mockVideoCompleted) return;
+
     mockAd.hidden = true;
     adBusy = false;
     pausedByAd = false;
     adState.textContent = 'Idle';
     resumeAudio();
 
-    log('mock:afterAd', { format, viewed });
+    log('mock:afterAd', { format, viewed: true });
 
     if (format === 'rewarded') {
-      if (viewed) {
-        rewardViewed = true;
-        pendingReviveAfterAd = true;
-        rewardState.textContent = 'Mock viewed ✓';
-        log('mock:adViewed', { rewardAuthorized: true });
-        pendingReviveAfterAd = false;
-        resumeFromReward();
-      } else {
-        rewardState.textContent = 'Mock dismissed · no reward';
-        setGameState('gameover');
-        showOverlay(
-          'No revive granted',
-          'The mock rewarded ad was not completed.',
-          'Restart',
-          startRound,
-          null,
-          null
-        );
-      }
+      rewardViewed = true;
+      pendingReviveAfterAd = true;
+      rewardState.textContent = 'Mock video viewed ✓';
+      log('mock:adViewed', {
+        rewardAuthorized: true,
+        evidence: 'video-ended'
+      });
+      pendingReviveAfterAd = false;
+      resumeFromReward();
     } else {
-      showCompletedResult('Mock interstitial completed.');
+      showCompletedResult('Mock interstitial video completed.');
     }
+
+    resetMockVideo();
   }
 
   function showMockAd(format) {
     if (adBusy) return;
+
     adBusy = true;
     providerMode = 'mock';
     pausedByAd = true;
     setGameState('paused');
     pauseAudio();
-    adState.textContent = format === 'rewarded' ? 'Mock rewarded' : 'Mock interstitial';
+    adState.textContent = format === 'rewarded' ? 'Mock rewarded video' : 'Mock interstitial video';
 
     const rewarded = format === 'rewarded';
-    const seconds = rewarded ? 5 : 3;
-    let remainingSeconds = seconds;
+    resetMockVideo();
 
     mockAdTitle.textContent = rewarded ? 'Mock Rewarded Ad' : 'Mock Interstitial Ad';
-    mockAdCreativeText.textContent = rewarded ? 'WATCH TO REVIVE' : 'YOUR AD HERE';
-    mockAdAction.disabled = true;
-    mockAdAction.textContent = rewarded ? 'Watch 5s to Revive' : 'Continue';
     mockAdCountdown.textContent = rewarded
-      ? `Watch for ${remainingSeconds}s to earn the revive.`
-      : `Closing available in ${remainingSeconds}s.`;
+      ? 'Watch the full video to unlock the revive.'
+      : 'Watch the mock ad video to continue.';
+    mockAdAction.disabled = true;
+    mockAdAction.textContent = rewarded ? 'Watch to Revive' : 'Continue';
     mockAd.hidden = false;
 
     log('mock:beforeAd', {
       format,
-      durationSeconds: seconds,
+      source: 'assets/mock/265065.mp4',
       reason: apiReady ? 'forced-mock' : 'google-unavailable'
     });
 
-    clearMockTimer();
-    mockTimer = window.setInterval(() => {
-      remainingSeconds -= 1;
-      if (remainingSeconds > 0) {
-        mockAdCountdown.textContent = rewarded
-          ? `Watch for ${remainingSeconds}s to earn the revive.`
-          : `Closing available in ${remainingSeconds}s.`;
-        return;
-      }
-
-      clearMockTimer();
+    mockAdVideo.onended = () => {
+      mockVideoCompleted = true;
       mockAdCountdown.textContent = rewarded
         ? 'Reward unlocked.'
         : 'Mock ad complete.';
       mockAdAction.disabled = false;
       mockAdAction.textContent = rewarded ? 'Claim Revive' : 'Continue';
-    }, 1000);
+      log('mock:videoEnded', {
+        format,
+        rewardAuthorized: rewarded
+      });
+    };
+
+    mockAdVideo.onerror = () => {
+      mockVideoCompleted = false;
+      adBusy = false;
+      pausedByAd = false;
+      adState.textContent = 'Mock video error';
+      resumeAudio();
+      log('mock:videoError', {
+        format,
+        source: 'assets/mock/265065.mp4'
+      });
+      mockAd.hidden = true;
+
+      if (rewarded) {
+        rewardState.textContent = 'Mock error · no reward';
+        setGameState('gameover');
+        showOverlay(
+          'Mock rewarded ad unavailable',
+          'The mock video could not be played. No revive was granted.',
+          'Restart',
+          startRound,
+          null,
+          null
+        );
+      } else {
+        showCompletedResult('Mock interstitial video could not be played.');
+      }
+
+      resetMockVideo();
+    };
 
     mockAdAction.onclick = () => {
-      if (mockAdAction.disabled) return;
-      finishMockAd(format, true);
+      if (mockAdAction.disabled || !mockVideoCompleted) return;
+      finishMockAd(format);
     };
+
+    const playPromise = mockAdVideo.play();
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise
+        .then(() => log('mock:videoStarted', { format }))
+        .catch((error) => {
+          mockAdCountdown.textContent = 'Tap Play Ad to start the mock video.';
+          mockAdAction.disabled = false;
+          mockAdAction.textContent = 'Play Ad';
+          log('mock:autoplayBlocked', {
+            format,
+            message: String(error)
+          });
+
+          mockAdAction.onclick = () => {
+            mockAdAction.disabled = true;
+            mockAdAction.textContent = rewarded ? 'Watch to Revive' : 'Continue';
+            mockAdVideo.play()
+              .then(() => log('mock:videoStarted', { format, retry: true }))
+              .catch((retryError) => mockAdVideo.onerror && mockAdVideo.onerror(retryError));
+          };
+        });
+    }
   }
 
   function rejectAdRequest(format) {
