@@ -331,7 +331,7 @@
       </div>
       <div id="log" role="log" aria-live="polite"></div>
       <div class="footer-note">
-        Development test mode only. Without a Publisher ID, the probe uses the bundled mock video ad. Mock click-through is enabled only when an advertiser URL is configured. Clicking the creative never grants reward; Rewarded unlocks only after the video reaches its natural end.
+        Development test mode only. Without a Publisher ID, the probe selects from the mock ad manifest. Multiple eligible ads are weighted-randomized with immediate-repeat avoidance. Clicking never grants reward; Rewarded unlocks only after the selected video reaches its natural end.
       </div>
     </aside>
   </div>
@@ -342,9 +342,7 @@
     <div class="mock-ad-badge">Mock Ad · Development Only</div>
     <h2 id="mockAdTitle">FiveRocks Mock Ad</h2>
     <div class="mock-ad-creative">
-      <video id="mockAdVideo" playsinline preload="metadata">
-        <source src="assets/mock/265065.mp4" type="video/mp4">
-      </video>
+      <video id="mockAdVideo" playsinline preload="metadata"></video>
     </div>
     <p class="mock-ad-countdown" id="mockAdCountdown">Preparing…</p>
     <div class="mock-ad-actions">
@@ -360,7 +358,16 @@
 
   const ROUND_SECONDS = 20;
   const MAX_REVIVES = 1;
-  const DEFAULT_MOCK_CLICK_URL = 'https://fiverocksgames.github.io/game-hub/';
+  const MOCK_AD_MANIFEST_URL = 'assets/mock/manifest.json';
+  const FALLBACK_MOCK_ADS = [
+    {
+      id: 'ad-001',
+      video: 'assets/mock/265065.mp4',
+      clickUrl: 'https://fiverocksgames.github.io/game-hub/',
+      formats: ['rewarded', 'interstitial'],
+      weight: 1
+    }
+  ];
   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
   const stage = document.getElementById('stage');
@@ -407,6 +414,10 @@
   let providerMode = 'mock';
   let mockVideoCompleted = false;
   let mockClickUrl = '';
+  let mockAds = FALLBACK_MOCK_ADS.slice();
+  let mockManifestLoaded = false;
+  let activeMockAd = null;
+  let lastMockAdId = '';
   let adBusy = false;
   let rewardViewed = false;
   let rewardApplied = false;
@@ -442,7 +453,7 @@
     return /^ca-pub-\d{16}$/.test(value);
   }
 
-  function readMockClickUrl() {
+  function readMockClickUrlOverride() {
     const params = new URLSearchParams(window.location.search);
     const fromQuery = (params.get('mockClickUrl') || '').trim();
     const fromGlobal = (
@@ -451,7 +462,7 @@
         ? window.H5_ADS_PROBE_CONFIG.mockClickUrl
         : ''
     ).trim();
-    return fromQuery || fromGlobal || DEFAULT_MOCK_CLICK_URL;
+    return fromQuery || fromGlobal;
   }
 
   function normalizeMockClickUrl(value) {
@@ -464,48 +475,124 @@
     }
   }
 
-  function configureMockClickThrough() {
-    const configured = readMockClickUrl();
-    mockClickUrl = normalizeMockClickUrl(configured);
+  function isValidMockVideoPath(value) {
+    return typeof value === 'string' &&
+      /^assets\/mock\/[A-Za-z0-9._/-]+\.mp4$/.test(value) &&
+      !value.includes('..');
+  }
 
-    if (!configured) {
-      mockAdClickThrough.disabled = true;
-      mockAdClickThrough.textContent = 'Advertiser link pending';
-      log('mock:clickThrough config missing');
-      return;
+  function normalizeMockAd(raw) {
+    if (!raw || typeof raw !== 'object') return null;
+
+    const id = typeof raw.id === 'string' ? raw.id.trim() : '';
+    const video = typeof raw.video === 'string' ? raw.video.trim() : '';
+    const clickUrl = normalizeMockClickUrl(raw.clickUrl);
+    const formats = Array.isArray(raw.formats)
+      ? raw.formats.filter((format) => ['rewarded', 'interstitial'].includes(format))
+      : [];
+    const weight = Number(raw.weight);
+
+    if (!id || !/^[A-Za-z0-9._-]+$/.test(id)) return null;
+    if (!isValidMockVideoPath(video)) return null;
+    if (!clickUrl) return null;
+    if (!formats.length) return null;
+    if (!Number.isFinite(weight) || weight <= 0) return null;
+
+    return { id, video, clickUrl, formats: Array.from(new Set(formats)), weight };
+  }
+
+  async function loadMockAdManifest() {
+    try {
+      const response = await fetch(MOCK_AD_MANIFEST_URL, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const payload = await response.json();
+      if (!payload || payload.schemaVersion !== 1 || !Array.isArray(payload.ads)) {
+        throw new Error('invalid manifest schema');
+      }
+
+      const normalized = payload.ads.map(normalizeMockAd).filter(Boolean);
+      const ids = new Set();
+      const deduped = normalized.filter((ad) => {
+        if (ids.has(ad.id)) return false;
+        ids.add(ad.id);
+        return true;
+      });
+
+      if (!deduped.length) throw new Error('no valid ads');
+
+      mockAds = deduped;
+      mockManifestLoaded = true;
+      log('mock:manifest loaded', {
+        count: mockAds.length,
+        ids: mockAds.map((ad) => ad.id)
+      });
+    } catch (error) {
+      mockAds = FALLBACK_MOCK_ADS.slice();
+      mockManifestLoaded = false;
+      log('mock:manifest fallback', {
+        reason: String(error),
+        count: mockAds.length
+      });
+    }
+  }
+
+  function randomUnit() {
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      const values = new Uint32Array(1);
+      window.crypto.getRandomValues(values);
+      return values[0] / 4294967296;
+    }
+    return Math.random();
+  }
+
+  function chooseMockAd(format) {
+    const eligible = mockAds.filter((ad) => ad.formats.includes(format));
+    if (!eligible.length) return null;
+
+    const pool = eligible.length > 1
+      ? eligible.filter((ad) => ad.id !== lastMockAdId)
+      : eligible;
+    const candidates = pool.length ? pool : eligible;
+    const totalWeight = candidates.reduce((sum, ad) => sum + ad.weight, 0);
+    let ticket = randomUnit() * totalWeight;
+
+    let selected = candidates[candidates.length - 1];
+    for (const ad of candidates) {
+      ticket -= ad.weight;
+      if (ticket < 0) {
+        selected = ad;
+        break;
+      }
     }
 
-    if (!mockClickUrl) {
-      mockAdClickThrough.disabled = true;
-      mockAdClickThrough.textContent = 'Advertiser link invalid';
-      log('mock:clickThrough config invalid');
-      return;
-    }
+    lastMockAdId = selected.id;
+    return selected;
+  }
 
-    mockAdClickThrough.disabled = false;
-    mockAdClickThrough.textContent = 'Visit advertiser';
+  function configureMockClickThrough(ad) {
+    const runtimeOverride = normalizeMockClickUrl(readMockClickUrlOverride());
+    mockClickUrl = runtimeOverride || ad.clickUrl;
+
+    mockAdClickThrough.disabled = !mockClickUrl;
+    mockAdClickThrough.textContent = mockClickUrl ? 'Visit advertiser' : 'Advertiser link unavailable';
+
     log('mock:clickThrough configured', {
-      host: new URL(mockClickUrl).host,
-      source: new URLSearchParams(window.location.search).has('mockClickUrl')
-        ? 'query'
-        : (
-          window.H5_ADS_PROBE_CONFIG &&
-          typeof window.H5_ADS_PROBE_CONFIG.mockClickUrl === 'string' &&
-          window.H5_ADS_PROBE_CONFIG.mockClickUrl.trim()
-            ? 'global'
-            : 'default'
-        )
+      adId: ad.id,
+      host: mockClickUrl ? new URL(mockClickUrl).host : null,
+      source: runtimeOverride ? 'runtime-override' : 'manifest'
     });
   }
 
   function openMockClickThrough(source) {
-    if (!mockClickUrl) {
+    if (!mockClickUrl || !activeMockAd) {
       log('mock:clickThrough blocked', { source, reason: 'url-not-configured' });
       return;
     }
 
     const opened = window.open(mockClickUrl, '_blank', 'noopener,noreferrer');
     log('mock:clickThrough', {
+      adId: activeMockAd.id,
       source,
       host: new URL(mockClickUrl).host,
       opened: Boolean(opened)
@@ -601,6 +688,8 @@
     mockVideoCompleted = false;
     mockAdVideo.pause();
     try { mockAdVideo.currentTime = 0; } catch (_) {}
+    mockAdVideo.removeAttribute('src');
+    mockAdVideo.load();
     mockAdVideo.onended = null;
     mockAdVideo.onerror = null;
   }
@@ -621,6 +710,7 @@
       pendingReviveAfterAd = true;
       rewardState.textContent = 'Mock video viewed ✓';
       log('mock:adViewed', {
+        adId: activeMockAd ? activeMockAd.id : null,
         rewardAuthorized: true,
         evidence: 'video-ended'
       });
@@ -646,8 +736,27 @@
     const rewarded = format === 'rewarded';
     resetMockVideo();
 
+    activeMockAd = chooseMockAd(format);
+    if (!activeMockAd) {
+      adBusy = false;
+      pausedByAd = false;
+      adState.textContent = 'Mock pool empty';
+      resumeAudio();
+      log('mock:selection failed', { format, manifestLoaded: mockManifestLoaded });
+      if (rewarded) {
+        rewardState.textContent = 'Mock unavailable · no reward';
+        setGameState('gameover');
+        showOverlay('Mock rewarded ad unavailable', 'No eligible mock ad exists for this format.', 'Restart', startRound, null, null);
+      } else {
+        showCompletedResult('No eligible mock interstitial is configured.');
+      }
+      return;
+    }
+
     mockAdTitle.textContent = rewarded ? 'Mock Rewarded Ad' : 'Mock Interstitial Ad';
-    configureMockClickThrough();
+    configureMockClickThrough(activeMockAd);
+    mockAdVideo.src = activeMockAd.video;
+    mockAdVideo.load();
     mockAdCountdown.textContent = rewarded
       ? 'Watch the full video to unlock the revive.'
       : 'Watch the mock ad video to continue.';
@@ -655,9 +764,18 @@
     mockAdAction.textContent = rewarded ? 'Watch to Revive' : 'Continue';
     mockAd.hidden = false;
 
-    log('mock:beforeAd', {
+    log('mock:selected', {
+      adId: activeMockAd.id,
       format,
-      source: 'assets/mock/265065.mp4',
+      weight: activeMockAd.weight,
+      candidateCount: mockAds.filter((ad) => ad.formats.includes(format)).length,
+      avoidedRepeat: mockAds.filter((ad) => ad.formats.includes(format)).length > 1
+    });
+
+    log('mock:beforeAd', {
+      adId: activeMockAd.id,
+      format,
+      source: activeMockAd.video,
       reason: apiReady ? 'forced-mock' : 'google-unavailable'
     });
 
@@ -669,6 +787,7 @@
       mockAdAction.disabled = false;
       mockAdAction.textContent = rewarded ? 'Claim Revive' : 'Continue';
       log('mock:videoEnded', {
+        adId: activeMockAd.id,
         format,
         rewardAuthorized: rewarded
       });
@@ -681,8 +800,9 @@
       adState.textContent = 'Mock video error';
       resumeAudio();
       log('mock:videoError', {
+        adId: activeMockAd ? activeMockAd.id : null,
         format,
-        source: 'assets/mock/265065.mp4'
+        source: activeMockAd ? activeMockAd.video : null
       });
       mockAd.hidden = true;
 
@@ -715,7 +835,7 @@
     const playPromise = mockAdVideo.play();
     if (playPromise && typeof playPromise.then === 'function') {
       playPromise
-        .then(() => log('mock:videoStarted', { format }))
+        .then(() => log('mock:videoStarted', { adId: activeMockAd.id, format }))
         .catch((error) => {
           mockAdCountdown.textContent = 'Tap Play Ad to start the mock video.';
           mockAdAction.disabled = false;
@@ -729,7 +849,7 @@
             mockAdAction.disabled = true;
             mockAdAction.textContent = rewarded ? 'Watch to Revive' : 'Continue';
             mockAdVideo.play()
-              .then(() => log('mock:videoStarted', { format, retry: true }))
+              .then(() => log('mock:videoStarted', { adId: activeMockAd.id, format, retry: true }))
               .catch((retryError) => mockAdVideo.onerror && mockAdVideo.onerror(retryError));
           };
         });
@@ -1215,6 +1335,7 @@
     queryKeys: Array.from(new URLSearchParams(window.location.search).keys()),
     userAgent: navigator.userAgent
   });
+  loadMockAdManifest();
   loadGoogleH5Ads();
 
   draw();
