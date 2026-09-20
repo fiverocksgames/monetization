@@ -3,7 +3,7 @@
   "ads": [
     {
       "id": "ad-001",
-      "video": "assets/mock/265065.mp4",
+      "video": "assets/mock/265552.mp4",
       "clickUrl": "https://fiverocksgames.github.io/game-hub/",
       "formats": ["rewarded", "interstitial"],
       "weight": 1
