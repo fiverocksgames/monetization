@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FiveRocks H5 Ads Asteroid Probe</title>
+  <meta name="color-scheme" content="dark">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #070b14;
+      color: #eef4ff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top, rgba(59, 130, 246, .16), transparent 34rem),
+        #070b14;
+    }
+
+    main {
+      width: min(1040px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: clamp(24px, 5vw, 38px); }
+    h2 { font-size: 18px; margin-bottom: 10px; }
+
+    .muted { color: #9ba9c4; }
+    .tiny { font-size: 12px; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #25314a;
+      background: rgba(12, 18, 32, .92);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .game-wrap { padding: 14px; }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .status {
+      background: #0a1020;
+      border: 1px solid #1e2a43;
+      border-radius: 10px;
+      padding: 9px;
+      min-width: 0;
+    }
+
+    .status span {
+      display: block;
+      color: #91a0bd;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .status strong {
+      display: block;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      max-height: 680px;
+      background: #030712;
+      border: 1px solid #22304c;
+      border-radius: 14px;
+      overflow: hidden;
+      touch-action: manipulation;
+    }
+
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(2, 6, 16, .68);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .overlay[hidden] { display: none; }
+    .overlay-card { max-width: 360px; }
+    .overlay-card p { color: #aab7cf; line-height: 1.5; }
+
+    button {
+      border: 1px solid #3a4d72;
+      background: #17233b;
+      color: #f7fbff;
+      min-height: 46px;
+      padding: 10px 14px;
+      border-radius: 11px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background: #245ec7;
+      border-color: #3d76df;
+    }
+
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    button:focus-visible { outline: 3px solid #79a8ff; outline-offset: 2px; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .touch-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .touch-controls button {
+      min-height: 58px;
+      font-size: 22px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .side { padding: 16px; }
+
+    .ad-state {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      border: 1px solid #253653;
+      border-radius: 10px;
+      padding: 9px 10px;
+      background: #0b1221;
+    }
+
+    .pill span { display: block; color: #91a0bd; font-size: 11px; }
+    .pill strong { display: block; margin-top: 2px; font-size: 13px; }
+
+    .mock-ad {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(1, 4, 12, .88);
+    }
+
+    .mock-ad[hidden] { display: none; }
+
+    .mock-ad-card {
+      width: min(440px, 100%);
+      border: 1px solid #3a4d72;
+      border-radius: 18px;
+      background: #0b1221;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 20px 70px rgba(0, 0, 0, .45);
+    }
+
+    .mock-ad-badge {
+      display: inline-block;
+      margin-bottom: 12px;
+      border: 1px solid #3a4d72;
+      border-radius: 999px;
+      padding: 5px 9px;
+      color: #9fb6dc;
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .mock-ad-creative {
+      display: grid;
+      place-items: center;
+      min-height: 190px;
+      margin: 16px 0;
+      border: 1px solid #243553;
+      border-radius: 14px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(61, 118, 223, .28), transparent 45%),
+        linear-gradient(180deg, #111b31, #080d18);
+      padding: 20px;
+    }
+
+    .mock-ad-creative video {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 58vh;
+      border-radius: 10px;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .mock-ad-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    @media (max-width: 460px) {
+      .mock-ad-actions { grid-template-columns: 1fr; }
+    }
+
+    .mock-ad-countdown {
+      margin: 8px 0 14px;
+      color: #9ba9c4;
+    }
+
+    #log {
+      min-height: 300px;
+      max-height: 520px;
+      overflow: auto;
+      border: 1px solid #202c43;
+      background: #050914;
+      border-radius: 10px;
+      padding: 10px;
+      font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid #22304a;
+      color: #91a0bd;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 780px) {
+      main { width: min(100% - 16px, 620px); padding-top: 12px; }
+      .layout { grid-template-columns: 1fr; }
+      .status-row { grid-template-columns: 1fr 1fr; }
+      .side { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Asteroid Run</h1>
+    <p class="muted">20-second HTML5 mini-game for Google H5 Games Ads + mock fallback validation.</p>
+  </header>
+
+  <div class="layout">
+    <section class="panel game-wrap" aria-label="Asteroid mini-game">
+      <div class="status-row">
+        <div class="status"><span>Time</span><strong id="timeValue">20.0</strong></div>
+        <div class="status"><span>Score</span><strong id="scoreValue">0</strong></div>
+        <div class="status"><span>Revives</span><strong id="reviveValue">0 / 1</strong></div>
+        <div class="status"><span>Game</span><strong id="gameStateValue">Ready</strong></div>
+      </div>
+
+      <div class="stage" id="stage">
+        <canvas id="game" width="640" height="800" aria-label="Space survival game"></canvas>
+        <div class="overlay" id="overlay">
+          <div class="overlay-card">
+            <h2 id="overlayTitle">Ready?</h2>
+            <p id="overlayText">Move left and right. Survive 20 seconds. A level-complete interstitial is requested after a win.</p>
+            <div class="actions">
+              <button class="primary" id="primaryButton" type="button">Start Game</button>
+              <button id="secondaryButton" type="button" hidden>Play Again</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="touch-controls" aria-label="Touch controls">
+        <button id="leftButton" type="button" aria-label="Move left">◀</button>
+        <button id="rightButton" type="button" aria-label="Move right">▶</button>
+      </div>
+      <p class="muted tiny" style="margin:10px 2px 0">Keyboard: ← → or A / D. Touch: hold the buttons. Game loop and sound pause during an ad.</p>
+    </section>
+
+    <aside class="panel side">
+      <h2>H5 Ads Probe</h2>
+      <div class="ad-state">
+        <div class="pill"><span>Google API</span><strong id="apiState">Configuring</strong></div>
+        <div class="pill"><span>Publisher</span><strong id="publisherState">Not set</strong></div>
+        <div class="pill"><span>Ad state</span><strong id="adState">Idle</strong></div>
+        <div class="pill"><span>Reward evidence</span><strong id="rewardState">None</strong></div>
+        <div class="pill"><span>Audio</span><strong id="audioState">Off</strong></div>
+      </div>
+      <div id="log" role="log" aria-live="polite"></div>
+      <div class="footer-note">
+        Development probe: the game calls AdsService only. Development mode uses Google test ads when ready and otherwise falls back to the mock manifest. Production mode is fail-closed and does not enable live ads. Clicking never grants reward; Rewarded unlocks only on a normalized successful outcome.
+      </div>
+    </aside>
+  </div>
+</main>
+
+<div class="mock-ad" id="mockAd" hidden aria-modal="true" role="dialog" aria-label="Mock advertisement">
+  <div class="mock-ad-card">
+    <div class="mock-ad-badge">Mock Ad · Development Only</div>
+    <h2 id="mockAdTitle">FiveRocks Mock Ad</h2>
+    <div class="mock-ad-creative">
+      <video id="mockAdVideo" playsinline preload="metadata"></video>
+    </div>
+    <p class="mock-ad-countdown" id="mockAdCountdown">Preparing…</p>
+    <div class="mock-ad-actions">
+      <button id="mockAdClickThrough" type="button" disabled>Advertiser link pending</button>
+      <button class="primary" id="mockAdAction" type="button" disabled>Continue</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { AdsService } from './ads/AdsService.js';
+(() => {
+  'use strict';
+
+  const ROUND_SECONDS = 20;
+  const MAX_REVIVES = 1;
+  const FALLBACK_MOCK_ADS = [{
+    id: 'ad-001',
+    video: 'assets/mock/265552.mp4',
+    clickUrl: 'https://fiverocksgames.github.io/game-hub/',
+    formats: ['rewarded', 'interstitial'],
+    weight: 1
+  }];
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const stage = document.getElementById('stage');
+  const overlay = document.getElementById('overlay');
+  const overlayTitle = document.getElementById('overlayTitle');
+  const overlayText = document.getElementById('overlayText');
+  const primaryButton = document.getElementById('primaryButton');
+  const secondaryButton = document.getElementById('secondaryButton');
+  const leftButton = document.getElementById('leftButton');
+  const rightButton = document.getElementById('rightButton');
+  const timeValue = document.getElementById('timeValue');
+  const scoreValue = document.getElementById('scoreValue');
+  const reviveValue = document.getElementById('reviveValue');
+  const gameStateValue = document.getElementById('gameStateValue');
+  const apiState = document.getElementById('apiState');
+  const publisherState = document.getElementById('publisherState');
+  const adState = document.getElementById('adState');
+  const rewardState = document.getElementById('rewardState');
+  const audioState = document.getElementById('audioState');
+  const logEl = document.getElementById('log');
+  const mockAd = document.getElementById('mockAd');
+  const mockAdTitle = document.getElementById('mockAdTitle');
+  const mockAdVideo = document.getElementById('mockAdVideo');
+  const mockAdCountdown = document.getElementById('mockAdCountdown');
+  const mockAdClickThrough = document.getElementById('mockAdClickThrough');
+  const mockAdAction = document.getElementById('mockAdAction');
+
+  const input = { left: false, right: false };
+  const player = { x: 320, y: 714, w: 42, h: 54, speed: 330 };
+  const meteors = [];
+
+  let state = 'ready';
+  let remaining = ROUND_SECONDS;
+  let score = 0;
+  let revives = 0;
+  let spawnClock = 0;
+  let lastFrame = performance.now();
+  let animationId = 0;
+  let pausedByAd = false;
+  let apiReady = false;
+  let sdkLoaded = false;
+  let sdkLoadFailed = false;
+  let providerMode = 'mock';
+  let mockVideoCompleted = false;
+  let mockClickUrl = '';
+  let mockAds = FALLBACK_MOCK_ADS.slice();
+  let mockManifestLoaded = false;
+  let activeMockAd = null;
+  let lastMockAdId = '';
+  let adBusy = false;
+  let rewardViewed = false;
+  let rewardApplied = false;
+  let pendingReviveAfterAd = false;
+  let audioCtx = null;
+  let humOsc = null;
+  let humGain = null;
+
+  function log(message, data) {
+    const stamp = new Date().toLocaleTimeString();
+    let line = `[${stamp}] ${message}`;
+    if (data !== undefined) {
+      try { line += ` ${JSON.stringify(data)}`; } catch (_) { line += ` ${String(data)}`; }
+    }
+    logEl.textContent += `${line}\n`;
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log('[H5 Ads Probe]', message, data === undefined ? '' : data);
+  }
+
+  function setGameState(next) {
+    state = next;
+    const labels = {
+      ready: 'Ready',
+      playing: 'Playing',
+      paused: 'Paused',
+      gameover: 'Game Over',
+      complete: 'Complete',
+      waitingAd: 'Ad wait'
+    };
+    gameStateValue.textContent = labels[next] || next;
+  }
+
+  function updateHud() {
+    timeValue.textContent = Math.max(0, remaining).toFixed(1);
+    scoreValue.textContent = String(score);
+    reviveValue.textContent = `${revives} / ${MAX_REVIVES}`;
+  }
+
+  function resetRound() {
+    remaining = ROUND_SECONDS;
+    score = 0;
+    revives = 0;
+    spawnClock = 0;
+    meteors.length = 0;
+    player.x = canvas.width / 2;
+    rewardViewed = false;
+    rewardApplied = false;
+    pendingReviveAfterAd = false;
+    rewardState.textContent = 'None';
+    updateHud();
+  }
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) {
+        audioState.textContent = 'Unsupported';
+        return;
+      }
+      audioCtx = new AudioContext();
+      humOsc = audioCtx.createOscillator();
+      humGain = audioCtx.createGain();
+      humOsc.type = 'sine';
+      humOsc.frequency.value = 72;
+      humGain.gain.value = 0.018;
+      humOsc.connect(humGain).connect(audioCtx.destination);
+      humOsc.start();
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    audioState.textContent = 'On';
+  }
+
+  function pauseAudio() {
+    if (audioCtx && audioCtx.state === 'running') audioCtx.suspend().catch(() => {});
+    audioState.textContent = 'Paused';
+  }
+
+  function resumeAudio() {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    audioState.textContent = audioCtx ? 'On' : 'Off';
+  }
+
+  function beep(frequency, duration) {
+    if (!audioCtx || audioCtx.state !== 'running') return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.value = frequency;
+    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  }
+
+  function showOverlay(title, text, primaryText, primaryHandler, secondaryText, secondaryHandler) {
+    overlayTitle.textContent = title;
+    overlayText.textContent = text;
+    primaryButton.textContent = primaryText;
+    primaryButton.onclick = primaryHandler;
+    secondaryButton.hidden = !secondaryText;
+    secondaryButton.textContent = secondaryText || '';
+    secondaryButton.onclick = secondaryHandler || null;
+    overlay.hidden = false;
+  }
+
+  function hideOverlay() {
+    overlay.hidden = true;
+  }
+
+  function startRound() {
+    ensureAudio();
+    resetRound();
+    hideOverlay();
+    setGameState('playing');
+    lastFrame = performance.now();
+    log('game:start');
+  }
+
+  function resumeFromReward() {
+    if (rewardApplied || revives >= MAX_REVIVES) return;
+    rewardApplied = true;
+    revives += 1;
+    rewardState.textContent = 'Applied once';
+    player.x = canvas.width / 2;
+    meteors.length = 0;
+    remaining = Math.max(4, remaining);
+    updateHud();
+    hideOverlay();
+    setGameState('playing');
+    resumeAudio();
+    lastFrame = performance.now();
+    beep(620, .16);
+    log('game:revived', { revives });
+  }
+
+  function failRound() {
+    if (state !== 'playing') return;
+    setGameState('gameover');
+    beep(120, .22);
+    const canRevive = revives < MAX_REVIVES;
+    showOverlay(
+      'Ship destroyed',
+      canRevive
+        ? 'Watch a rewarded test ad to revive. Only adViewed can authorize the revive.'
+        : 'The single revive has already been used.',
+      canRevive ? 'Revive with Rewarded Ad' : 'Restart',
+      canRevive ? requestRewarded : startRound,
+      canRevive ? 'Restart Instead' : null,
+      canRevive ? startRound : null
+    );
+    log('game:gameover', { remaining: Number(remaining.toFixed(2)), score });
+  }
+
+  function completeRound() {
+    if (state !== 'playing') return;
+    setGameState('complete');
+    remaining = 0;
+    updateHud();
+    beep(880, .18);
+    log('game:level_complete', { score });
+    showOverlay(
+      'Level complete',
+      'Requesting a development interstitial. The game should remain paused until the ad finishes.',
+      'Show Interstitial',
+      requestInterstitial,
+      'Skip Ad Request',
+      () => showCompletedResult('Interstitial skipped manually.')
+    );
+  }
+
+  function showCompletedResult(message) {
+    resumeAudio();
+    setGameState('complete');
+    showOverlay('Run complete', message, 'Play Again', startRound, null, null);
+  }
+
+  function adLifecycle() {
+    return {
+      onStart: () => {
+        pausedByAd = true;
+        setGameState('paused');
+        pauseAudio();
+        adState.textContent = 'Showing';
+      },
+      onFinish: () => {
+        pausedByAd = false;
+        adState.textContent = 'Idle';
+      }
+    };
+  }
+
+  async function requestInterstitial() {
+    ensureAudio();
+    if (adBusy) return;
+    adBusy = true;
+    setGameState('waitingAd');
+    const outcome = await ads.showInterstitial('level_complete', adLifecycle());
+    adBusy = false;
+    pausedByAd = false;
+    log('ad:outcome', { format: 'interstitial', ...outcome });
+    showCompletedResult(outcome.completed ? 'Interstitial finished.' : 'Interstitial unavailable or skipped; game continues.');
+  }
+
+  async function requestRewarded() {
+    ensureAudio();
+    if (adBusy || revives >= MAX_REVIVES) return;
+    adBusy = true;
+    setGameState('waitingAd');
+    const outcome = await ads.showRewarded('revive', adLifecycle());
+    adBusy = false;
+    pausedByAd = false;
+    log('ad:outcome', { format: 'rewarded', ...outcome });
+    if (outcome.completed === true && outcome.rewarded === true && outcome.reason === 'success') {
+      rewardState.textContent = 'Reward authorized';
+      resumeFromReward();
+    } else {
+      rewardState.textContent = outcome.reason + ' · no reward';
+      setGameState('gameover');
+      resumeAudio();
+      showOverlay('No revive granted', 'Rewarded ad did not complete. No revive was granted.', 'Restart', startRound, null, null);
+    }
+  }
+
+  function spawnMeteor() {
+    const radius = 15 + Math.random() * 20;
+    meteors.push({
+      x: radius + Math.random() * (canvas.width - radius * 2),
+      y: -radius - 10,
+      r: radius,
+      speed: 150 + Math.random() * 150 + (ROUND_SECONDS - remaining) * 4,
+      spin: Math.random() * Math.PI * 2
+    });
+  }
+
+  function collides(meteor) {
+    const nearestX = Math.max(player.x - player.w / 2, Math.min(meteor.x, player.x + player.w / 2));
+    const nearestY = Math.max(player.y - player.h / 2, Math.min(meteor.y, player.y + player.h / 2));
+    const dx = meteor.x - nearestX;
+    const dy = meteor.y - nearestY;
+    return dx * dx + dy * dy < meteor.r * meteor.r;
+  }
+
+  function update(dt) {
+    if (state !== 'playing' || pausedByAd) return;
+
+    const direction = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    player.x += direction * player.speed * dt;
+    const half = player.w / 2;
+    player.x = Math.max(half + 8, Math.min(canvas.width - half - 8, player.x));
+
+    remaining -= dt;
+    score += Math.floor(dt * 100);
+    spawnClock -= dt;
+    if (spawnClock <= 0) {
+      spawnMeteor();
+      spawnClock = Math.max(.22, .58 - (ROUND_SECONDS - remaining) * .012);
+    }
+
+    for (let i = meteors.length - 1; i >= 0; i -= 1) {
+      const meteor = meteors[i];
+      meteor.y += meteor.speed * dt;
+      meteor.spin += dt;
+      if (collides(meteor)) {
+        failRound();
+        return;
+      }
+      if (meteor.y - meteor.r > canvas.height) meteors.splice(i, 1);
+    }
+
+    if (remaining <= 0) completeRound();
+    updateHud();
+  }
+
+  function draw() {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#071426');
+    gradient.addColorStop(1, '#02050c');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = 'rgba(255,255,255,.42)';
+    for (let i = 0; i < 46; i += 1) {
+      const x = (i * 137.2) % canvas.width;
+      const y = (i * 83.7 + performance.now() * .018) % canvas.height;
+      ctx.fillRect(x, y, 2, 2);
+    }
+
+    for (const meteor of meteors) {
+      ctx.save();
+      ctx.translate(meteor.x, meteor.y);
+      ctx.rotate(meteor.spin);
+      ctx.fillStyle = '#a46a42';
+      ctx.beginPath();
+      for (let i = 0; i < 9; i += 1) {
+        const angle = (Math.PI * 2 * i) / 9;
+        const rr = meteor.r * (i % 2 ? .78 : 1);
+        const x = Math.cos(angle) * rr;
+        const y = Math.sin(angle) * rr;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = 'rgba(40,20,10,.25)';
+      ctx.beginPath();
+      ctx.arc(-meteor.r * .2, -meteor.r * .1, meteor.r * .22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.fillStyle = state === 'playing' ? '#79b8ff' : '#60799c';
+    ctx.beginPath();
+    ctx.moveTo(0, -player.h / 2);
+    ctx.lineTo(player.w / 2, player.h / 2);
+    ctx.lineTo(0, player.h * .3);
+    ctx.lineTo(-player.w / 2, player.h / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#e8f4ff';
+    ctx.beginPath();
+    ctx.arc(0, -4, 7, 0, Math.PI * 2);
+    ctx.fill();
+    if (state === 'playing') {
+      ctx.fillStyle = '#ffb45e';
+      ctx.beginPath();
+      ctx.moveTo(-7, player.h * .34);
+      ctx.lineTo(0, player.h * .65 + Math.random() * 7);
+      ctx.lineTo(7, player.h * .34);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function frame(now) {
+    const dt = Math.min(.033, Math.max(0, (now - lastFrame) / 1000));
+    lastFrame = now;
+    update(dt);
+    draw();
+    animationId = requestAnimationFrame(frame);
+  }
+
+  function setKey(code, down) {
+    if (code === 'ArrowLeft' || code === 'KeyA') input.left = down;
+    if (code === 'ArrowRight' || code === 'KeyD') input.right = down;
+  }
+
+  window.addEventListener('keydown', (event) => {
+    if (['ArrowLeft', 'ArrowRight', 'KeyA', 'KeyD'].includes(event.code)) {
+      event.preventDefault();
+      setKey(event.code, true);
+    }
+  });
+  window.addEventListener('keyup', (event) => setKey(event.code, false));
+  window.addEventListener('blur', () => { input.left = false; input.right = false; });
+
+  function bindHold(button, direction) {
+    const press = (event) => {
+      event.preventDefault();
+      input[direction] = true;
+      try { button.setPointerCapture(event.pointerId); } catch (_) {}
+    };
+    const release = (event) => {
+      event.preventDefault();
+      input[direction] = false;
+    };
+    button.addEventListener('pointerdown', press);
+    button.addEventListener('pointerup', release);
+    button.addEventListener('pointercancel', release);
+    button.addEventListener('lostpointercapture', release);
+  }
+  bindHold(leftButton, 'left');
+  bindHold(rightButton, 'right');
+
+  primaryButton.onclick = startRound;
+  secondaryButton.hidden = true;
+
+  log('probe:boot', {
+    origin: window.location.origin,
+    path: window.location.pathname,
+    queryKeys: Array.from(new URLSearchParams(window.location.search).keys()),
+    userAgent: navigator.userAgent
+  });
+  const runtimeParams = new URLSearchParams(window.location.search);
+  const runtimeConfig = window.H5_ADS_PROBE_CONFIG || {};
+  const publisherId = (runtimeParams.get('publisherId') || runtimeConfig.publisherId || '').trim();
+  const environment = runtimeConfig.environment === 'production' ? 'production' : 'development';
+  const ads = new AdsService({
+    environment,
+    publisherId,
+    mockRoot: mockAd,
+    manifestUrl: 'assets/mock/manifest.json',
+    fallbackAds: FALLBACK_MOCK_ADS,
+    mockClickUrl: runtimeParams.get('mockClickUrl') || runtimeConfig.mockClickUrl || '',
+    log,
+    onStatus: status => {
+      apiState.textContent = status;
+      publisherState.textContent = environment === 'production'
+        ? 'Disabled'
+        : publisherId ? publisherId.slice(0, 11) + '…' : 'Mock';
+    }
+  });
+
+  draw();
+  updateHud();
+  animationId = requestAnimationFrame(frame);
+
+  window.addEventListener('beforeunload', () => {
+    if (animationId) cancelAnimationFrame(animationId);
+    if (humOsc) {
+      try { humOsc.stop(); } catch (_) {}
+    }
+  });
+})();
+</script>
+</body>
+</html>
