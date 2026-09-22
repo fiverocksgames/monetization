@@ -77,8 +77,6 @@ export class MockAdsProvider {
     // Create UI only when an ad is actually requested. No game-specific DOM/CSS.
     const ui = new MockAdOverlay();
     const video = ui.video;
-    const clickUrl = MockAdsProvider.validUrl(this.clickUrlOverride) || ad.clickUrl;
-    ui.advertiser.disabled = !clickUrl;
     let ended = false;
     let settled = false;
     let showing = false;
@@ -159,11 +157,6 @@ export class MockAdsProvider {
       finish({ completed: true, rewarded: format === 'rewarded', reason: 'success' });
     });
     listen(ui.play, 'click', () => { void tryPlay(); });
-    listen(ui.advertiser, 'click', () => {
-      if (settled || !clickUrl || !ui.confirm.hidden) return;
-      window.open(clickUrl, '_blank', 'noopener,noreferrer');
-      this.log('mock:clickThrough', { adId: ad.id, host: new URL(clickUrl).host });
-    });
     listen(ui.close, 'click', confirmClose);
     listen(ui.resume, 'click', continueWatching);
     listen(ui.quit, 'click', () => finish(cancelled));

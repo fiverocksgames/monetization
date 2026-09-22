@@ -48,6 +48,8 @@ button:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
     padding: 10px 12px max(12px, env(safe-area-inset-bottom));
     background: #000;
   }
+  .card > .actions .claim:disabled { visibility: hidden; }
+  .card > .actions .play[hidden] { display: none; }
   .confirm { position: fixed; }
 }
 `;
@@ -66,7 +68,7 @@ export class MockAdOverlay {
           <h2 id="title">테스트 광고</h2>
           <video class="video" playsinline muted preload="auto" aria-label="테스트 광고 영상"></video>
           <p id="status" role="status" aria-live="polite">광고를 준비하고 있습니다.</p>
-          <div class="actions"><button class="play" type="button" hidden>영상 재생</button><button class="advertiser" type="button" disabled>광고주 사이트</button><button class="claim primary" type="button" disabled>보상 받기</button></div>
+          <div class="actions"><button class="play" type="button" hidden>영상 재생</button><button class="claim primary" type="button" disabled>보상 받기</button></div>
         </section>
         <div class="confirm" hidden><section class="confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
           <h2 id="confirm-title">광고를 종료할까요?</h2><p id="confirm-message">광고를 닫으면 보상을 받을 수 없습니다. 종료하시겠습니까?</p>
@@ -77,7 +79,6 @@ export class MockAdOverlay {
     this.video = get('.video');
     this.status = get('#status');
     this.play = get('.play');
-    this.advertiser = get('.advertiser');
     this.claim = get('.claim');
     this.close = get('.close');
     this.confirm = get('.confirm');

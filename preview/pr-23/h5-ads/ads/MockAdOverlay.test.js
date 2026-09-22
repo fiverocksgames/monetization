@@ -25,15 +25,15 @@ function fakeDocument() {
     pause() { this.pauseCount++; },
     load() {}
   });
-  const close = node(), claim = node(), play = node(), advertiser = node(), confirm = node();
+  const close = node(), claim = node(), play = node(), confirm = node();
   claim.disabled = true; // fake DOM does not parse the HTML disabled attribute
   confirm.hidden = true;
   const resume = node(), quit = node(), status = node();
-  const buttons = [close, play, advertiser, claim];
+  const buttons = [close, play, claim];
   const card = { querySelectorAll() { return buttons; } };
   confirm.querySelectorAll = () => [resume, quit];
   const nodes = { '.video': video, '#status': status, '.play': play,
-    '.claim': claim, '.close': close, '.advertiser': advertiser, '.confirm': confirm,
+    '.claim': claim, '.close': close, '.confirm': confirm,
     '.resume': resume, '.quit': quit, '.card': card };
   const shadow = Object.assign(node(), {
     activeElement: close,

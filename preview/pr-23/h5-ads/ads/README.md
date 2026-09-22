@@ -83,3 +83,18 @@ const result = await ads.showRewarded('daily_spin');
 Production remains fail-closed: this feature is not live ad enablement or
 server-side reward verification. UI unit tests simulate browser events;
 mobile/desktop playback and focus/accessibility require separate device testing.
+
+
+## Mock presentation vs. Google H5 ad UI
+
+The development mock is deliberately **not** Google's actual rendered ad or
+an official UI replica. Its browser-viewport video, clearly marked mock label,
+close affordance, and rewarded completion flow are a visual/behavioral approximation
+for game integration. The mock has no separate advertiser-site CTA, and video
+clicks never grant rewards. On narrow screens the full source frame is preserved
+(`object-fit: contain`) and unused space is black. The reward button becomes
+usable only after video `ended` and still requires an explicit click, per the
+current FiveRocks test-flow decision; actual Google H5 rewarded entitlement is
+signaled by its `adViewed` callback, and its ad UI is controlled by Google.
+Do not overlay this mock UI on Google creative or treat the mock as Google
+certification. See the official Ad Placement API docs and policies for real ads.
