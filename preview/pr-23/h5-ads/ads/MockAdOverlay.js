@@ -24,11 +24,9 @@ button:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
   /* Browser viewport fullscreen, not browser-chrome fullscreen. Preserve every video pixel. */
   .backdrop { padding: 0; background: #000; }
   .card {
-    position: relative; width: 100%; height: 100vh; height: 100dvh;
+    position: relative; display: block; width: 100%; height: 100vh; height: 100dvh;
     max-height: none; min-height: 0; overflow: hidden;
-    border: 0; border-radius: 0; padding: 0; gap: 0;
-    grid-template-rows: minmax(0, 1fr) auto auto;
-    background: #000;
+    border: 0; border-radius: 0; padding: 0; background: #000;
   }
   .head {
     position: absolute; inset: 0 0 auto 0; z-index: 2;
@@ -39,17 +37,26 @@ button:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
   .head .close { pointer-events: auto; }
   .badge { font-size: 10px; text-shadow: 0 1px 3px #000; }
   .card > h2 { display: none; }
+  /* Video uses the entire content viewport; letterboxing is only from the source aspect ratio. */
   .video {
-    grid-row: 1; width: 100%; height: 100%; min-width: 0; min-height: 0;
-    max-height: none; object-fit: contain; background: #000;
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    min-width: 0; min-height: 0; max-height: none;
+    object-fit: contain; background: #000;
   }
-  #status { padding: 10px 14px 4px; background: #000; }
+  #status {
+    position: absolute; z-index: 2; left: 12px; right: 12px;
+    bottom: max(78px, calc(env(safe-area-inset-bottom) + 66px));
+    padding: 6px 8px; width: fit-content; max-width: calc(100% - 24px);
+    border-radius: 6px; background: #000b; color: #fff;
+    pointer-events: none; text-shadow: 0 1px 2px #000;
+  }
   .card > .actions {
-    padding: 10px 12px max(12px, env(safe-area-inset-bottom));
-    background: #000;
+    position: absolute; z-index: 2; left: 0; right: 0; bottom: 0;
+    padding: 8px 12px max(12px, env(safe-area-inset-bottom));
+    background: transparent; pointer-events: none;
   }
-  .card > .actions .claim:disabled { visibility: hidden; }
-  .card > .actions .play[hidden] { display: none; }
+  .card > .actions button { pointer-events: auto; }
+  .card > .actions .claim:disabled, .card > .actions .play[hidden] { display: none; }
   .confirm { position: fixed; }
 }
 `;
