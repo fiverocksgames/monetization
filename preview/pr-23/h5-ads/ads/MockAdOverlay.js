@@ -21,9 +21,34 @@ button:focus-visible { outline: 3px solid #facc15; outline-offset: 2px; }
 .confirm[hidden] { display: none; }
 .confirm-card { display: grid; gap: 14px; width: min(400px, 100%); padding: 22px; border-radius: 16px; background: #1e293b; border: 1px solid #94a3b8; }
 @media (max-width: 600px) {
-  .backdrop { padding: 0; }
-  .card { width: 100%; height: 100dvh; max-height: none; border: 0; border-radius: 0; padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom)); grid-template-rows: auto auto minmax(0,1fr) auto auto; }
-  .video { width: 100%; height: 100%; max-height: none; min-height: 0; }
+  /* Browser viewport fullscreen, not browser-chrome fullscreen. Preserve every video pixel. */
+  .backdrop { padding: 0; background: #000; }
+  .card {
+    position: relative; width: 100%; height: 100vh; height: 100dvh;
+    max-height: none; min-height: 0; overflow: hidden;
+    border: 0; border-radius: 0; padding: 0; gap: 0;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    background: #000;
+  }
+  .head {
+    position: absolute; inset: 0 0 auto 0; z-index: 2;
+    padding: max(8px, env(safe-area-inset-top)) 12px 8px;
+    background: linear-gradient(#000c, transparent);
+    pointer-events: none;
+  }
+  .head .close { pointer-events: auto; }
+  .badge { font-size: 10px; text-shadow: 0 1px 3px #000; }
+  .card > h2 { display: none; }
+  .video {
+    grid-row: 1; width: 100%; height: 100%; min-width: 0; min-height: 0;
+    max-height: none; object-fit: contain; background: #000;
+  }
+  #status { padding: 10px 14px 4px; background: #000; }
+  .card > .actions {
+    padding: 10px 12px max(12px, env(safe-area-inset-bottom));
+    background: #000;
+  }
+  .confirm { position: fixed; }
 }
 `;
 
