@@ -2,12 +2,12 @@
     "schemaVersion":  1,
     "channel":  "ephemeral-pr-preview",
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "054063edac0379212d3379555b4759b4aa27d962",
+    "sourceCommit":  "91e40e431b77169149bc370460880847f8c24e7d",
     "pullRequest":  23,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "35703834089",
+    "buildRunId":  "35705713837",
     "runnerName":  "FRD-LAPTOP-01",
-    "builtAt":  "2026-09-22T08:15:49.9213112Z",
+    "builtAt":  "2026-09-22T08:36:39.0766267Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
@@ -44,19 +44,19 @@
                   },
                   {
                       "path":  "h5-ads/ads/MockAdOverlay.js",
-                      "sha256":  "4a880b7254101a0ace2031fbb419d79ede98fc662e8264bac162f524a05caabe"
+                      "sha256":  "4209fd3ed28d917a639e69814d19a97f7d970cc9f9c19f1d2efb9f7c44e6caa7"
                   },
                   {
                       "path":  "h5-ads/ads/MockAdOverlay.test.js",
-                      "sha256":  "f896a70444e2a27975b5420a57a10a6c1c144bb93a00d2d1ac9b0122f462b7ee"
+                      "sha256":  "f438b88b936e0df4f77ea4313b53ece70db1d43aabb83735ab700307a3516ca0"
                   },
                   {
                       "path":  "h5-ads/ads/MockAdsProvider.js",
-                      "sha256":  "cbedbeef5553f6ec8bc921cf420e290f3e9d782c3ba60fe9cb194a055ccb926d"
+                      "sha256":  "dace0202f4943f16387824f70d5da855d3613dc9f0feadfdefce5726b0c968d6"
                   },
                   {
                       "path":  "h5-ads/ads/README.md",
-                      "sha256":  "5118cc962a1c5a0515e7c09431a079d17a56af124183154749bd7f67526f6efe"
+                      "sha256":  "c9e831e898473afd39770f50df9a8c1e4cfdf513ff4df0cd1fb022fcd23f06cd"
                   },
                   {
                       "path":  "h5-ads/assets/mock/265065.mp4",

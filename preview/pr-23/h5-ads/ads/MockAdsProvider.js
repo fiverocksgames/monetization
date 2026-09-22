@@ -77,6 +77,7 @@ export class MockAdsProvider {
     // Create UI only when an ad is actually requested. No game-specific DOM/CSS.
     const ui = new MockAdOverlay();
     const video = ui.video;
+    const clickUrl = MockAdsProvider.validUrl(this.clickUrlOverride) || MockAdsProvider.validUrl(ad.clickUrl);
     let ended = false;
     let settled = false;
     let showing = false;
@@ -157,6 +158,19 @@ export class MockAdsProvider {
       finish({ completed: true, rewarded: format === 'rewarded', reason: 'success' });
     });
     listen(ui.play, 'click', () => { void tryPlay(); });
+    // A creative tap is a click-through, never playback completion or reward.
+    // Open synchronously in the user gesture to avoid mobile popup blockers.
+    const openAdvertiser = () => {
+      if (settled || !ui.confirm.hidden || !clickUrl) return;
+      const page = window.open(clickUrl, '_blank', 'noopener,noreferrer');
+      this.log('mock:clickThrough', { adId: ad.id, host: new URL(clickUrl).host, opened: Boolean(page) });
+    };
+    listen(video, 'click', openAdvertiser);
+    listen(video, 'keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openAdvertiser();
+    });
     listen(ui.close, 'click', confirmClose);
     listen(ui.resume, 'click', continueWatching);
     listen(ui.quit, 'click', () => finish(cancelled));
@@ -176,6 +190,9 @@ export class MockAdsProvider {
     video.playsInline = true;
     // Native scrubber is deliberately absent: no seeking past the ad in ordinary UX.
     video.controls = false;
+    video.tabIndex = clickUrl ? 0 : -1;
+    video.setAttribute('role', clickUrl ? 'link' : 'img');
+    video.setAttribute('aria-label', clickUrl ? '광고 영상: 광고주 사이트 열기' : '테스트 광고 영상');
     video.src = new URL(ad.video, document.baseURI).href;
     try {
       ui.open();

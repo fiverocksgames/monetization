@@ -10,7 +10,7 @@ const CSS = `
 h2, p { margin: 0; }
 h2 { font-size: 20px; }
 p { color: #cbd5e1; font-size: 14px; line-height: 1.4; }
-.video { display: block; width: 100%; max-height: 58dvh; background: #000; object-fit: contain; }
+.video { display: block; width: 100%; max-height: 58dvh; background: #000; object-fit: contain; cursor: pointer; }
 .actions { display: flex; gap: 10px; }
 button { min-height: 48px; flex: 1; border-radius: 10px; border: 1px solid #8392ab; padding: 10px; font: inherit; font-weight: 700; color: white; background: #243451; cursor: pointer; }
 button.primary { background: #2563eb; border-color: #60a5fa; }

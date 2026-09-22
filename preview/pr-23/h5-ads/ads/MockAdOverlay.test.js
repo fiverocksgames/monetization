@@ -57,6 +57,9 @@ async function startAd() {
   const ui = fakeDocument();
   const oldDoc = globalThis.document;
   const oldFetch = globalThis.fetch;
+  const oldWindow = globalThis.window;
+  const opened = [];
+  globalThis.window = { open: (...args) => { opened.push(args); return {}; } };
   globalThis.document = ui.doc;
   globalThis.fetch = async () => ({ ok: true, json: async () => ({
     schemaVersion: 1, ads: [{ id: 'ad-001', formats: ['rewarded'], weight: 1,
@@ -65,7 +68,7 @@ async function startAd() {
   const provider = new MockAdsProvider({ manifestUrl: './assets/mock/manifest.json' });
   const result = provider.show('rewarded');
   await new Promise(resolve => setImmediate(resolve));
-  return { ...ui, result, restore() { globalThis.document = oldDoc; globalThis.fetch = oldFetch; } };
+  return { ...ui, result, opened, restore() { globalThis.document = oldDoc; globalThis.fetch = oldFetch; globalThis.window = oldWindow; } };
 }
 
 test('SDK owns overlay; pre-completion close requires confirmation; cancel means no reward', async () => {
@@ -110,5 +113,27 @@ test('closing after playback but before claiming is still unrewarded', async () 
     ui.video.emit('ended');
     ui.close.emit('click');
     assert.deepEqual(await ui.result, { completed: false, rewarded: false, reason: 'user-close' });
+  } finally { ui.restore(); }
+});
+
+test('creative tap opens advertiser in a new tab and does not grant a reward', async () => {
+  const ui = await startAd();
+  try {
+    let settled = false;
+    ui.result.then(() => { settled = true; });
+    ui.video.emit('click');
+    await Promise.resolve();
+    assert.deepEqual(ui.opened, [['https://example.org/', '_blank', 'noopener,noreferrer']]);
+    assert.equal(ui.claim.disabled, true);
+    assert.equal(settled, false);
+    ui.close.emit('click');
+    ui.video.emit('click'); // Confirmation overlay prevents background click-through.
+    assert.equal(ui.opened.length, 1);
+    ui.resume.emit('click');
+    ui.video.emit('keydown', { key: 'Enter', preventDefault() {} });
+    assert.equal(ui.opened.length, 2);
+    ui.video.emit('ended');
+    ui.claim.emit('click');
+    assert.deepEqual(await ui.result, { completed: true, rewarded: true, reason: 'success' });
   } finally { ui.restore(); }
 });

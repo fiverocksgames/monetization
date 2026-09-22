@@ -90,8 +90,7 @@ mobile/desktop playback and focus/accessibility require separate device testing.
 The development mock is deliberately **not** Google's actual rendered ad or
 an official UI replica. Its browser-viewport video, clearly marked mock label,
 close affordance, and rewarded completion flow are a visual/behavioral approximation
-for game integration. The mock has no separate advertiser-site CTA, and video
-clicks never grant rewards. On narrow screens the full source frame is preserved
+for game integration. The mock has no separate advertiser-site CTA. Clicking or tapping the video opens the manifest's validated advertiser URL in a new tab; this click-through never grants a reward. Keyboard users may open the URL with Enter or Space when the video is focused. On narrow screens the full source frame is preserved
 (`object-fit: contain`) and unused space is black. The reward button becomes
 usable only after video `ended` and still requires an explicit click, per the
 current FiveRocks test-flow decision; actual Google H5 rewarded entitlement is
