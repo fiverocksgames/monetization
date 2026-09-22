@@ -173,78 +173,6 @@
     .pill span { display: block; color: #91a0bd; font-size: 11px; }
     .pill strong { display: block; margin-top: 2px; font-size: 13px; }
 
-    .mock-ad {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      background: rgba(1, 4, 12, .88);
-    }
-
-    .mock-ad[hidden] { display: none; }
-
-    .mock-ad-card {
-      width: min(440px, 100%);
-      border: 1px solid #3a4d72;
-      border-radius: 18px;
-      background: #0b1221;
-      padding: 22px;
-      text-align: center;
-      box-shadow: 0 20px 70px rgba(0, 0, 0, .45);
-    }
-
-    .mock-ad-badge {
-      display: inline-block;
-      margin-bottom: 12px;
-      border: 1px solid #3a4d72;
-      border-radius: 999px;
-      padding: 5px 9px;
-      color: #9fb6dc;
-      font-size: 11px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    .mock-ad-creative {
-      display: grid;
-      place-items: center;
-      min-height: 190px;
-      margin: 16px 0;
-      border: 1px solid #243553;
-      border-radius: 14px;
-      background:
-        radial-gradient(circle at 50% 30%, rgba(61, 118, 223, .28), transparent 45%),
-        linear-gradient(180deg, #111b31, #080d18);
-      padding: 20px;
-    }
-
-    .mock-ad-creative video {
-      display: block;
-      width: auto;
-      max-width: 100%;
-      max-height: 58vh;
-      border-radius: 10px;
-      background: #000;
-      cursor: pointer;
-    }
-
-    .mock-ad-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    @media (max-width: 460px) {
-      .mock-ad-actions { grid-template-columns: 1fr; }
-    }
-
-    .mock-ad-countdown {
-      margin: 8px 0 14px;
-      color: #9ba9c4;
-    }
-
     #log {
       min-height: 300px;
       max-height: 520px;
@@ -329,21 +257,6 @@
   </div>
 </main>
 
-<div class="mock-ad" id="mockAd" hidden aria-modal="true" role="dialog" aria-label="Mock advertisement">
-  <div class="mock-ad-card">
-    <div class="mock-ad-badge">Mock Ad · Development Only</div>
-    <h2 id="mockAdTitle">FiveRocks Mock Ad</h2>
-    <div class="mock-ad-creative">
-      <video id="mockAdVideo" playsinline preload="metadata"></video>
-    </div>
-    <p class="mock-ad-countdown" id="mockAdCountdown">Preparing…</p>
-    <div class="mock-ad-actions">
-      <button id="mockAdClickThrough" type="button" disabled>Advertiser link pending</button>
-      <button class="primary" id="mockAdAction" type="button" disabled>Continue</button>
-    </div>
-  </div>
-</div>
-
 <script type="module">
 import { AdsService } from './ads/AdsService.js';
 (() => {
@@ -378,12 +291,6 @@ import { AdsService } from './ads/AdsService.js';
   const rewardState = document.getElementById('rewardState');
   const audioState = document.getElementById('audioState');
   const logEl = document.getElementById('log');
-  const mockAd = document.getElementById('mockAd');
-  const mockAdTitle = document.getElementById('mockAdTitle');
-  const mockAdVideo = document.getElementById('mockAdVideo');
-  const mockAdCountdown = document.getElementById('mockAdCountdown');
-  const mockAdClickThrough = document.getElementById('mockAdClickThrough');
-  const mockAdAction = document.getElementById('mockAdAction');
 
   const input = { left: false, right: false };
   const player = { x: 320, y: 714, w: 42, h: 54, speed: 330 };
@@ -798,7 +705,6 @@ import { AdsService } from './ads/AdsService.js';
   const ads = new AdsService({
     environment,
     publisherId,
-    mockRoot: mockAd,
     manifestUrl: 'assets/mock/manifest.json',
     fallbackAds: FALLBACK_MOCK_ADS,
     mockClickUrl: runtimeParams.get('mockClickUrl') || runtimeConfig.mockClickUrl || '',

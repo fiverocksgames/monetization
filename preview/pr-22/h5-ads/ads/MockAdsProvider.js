@@ -1,4 +1,6 @@
-// Development-only HTML5 mock provider. No gameplay state is mutated here.
+import { MockAdOverlay } from './MockAdOverlay.js';
+
+// Development-only HTML5 mock provider. Overlay and playback are SDK-owned.
 export class MockAdsProvider {
   constructor({ root, manifestUrl = 'assets/mock/manifest.json', fallbackAds = [], log = () => {}, clickUrlOverride = '' }) {
     this.root = root;
@@ -71,85 +73,137 @@ export class MockAdsProvider {
     await this.loaded;
     const ad = this.select(format);
     if (!ad) return { completed: false, rewarded: false, reason: 'unavailable' };
-    const root = this.root;
-    const video = root.querySelector('#mockAdVideo');
-    const title = root.querySelector('#mockAdTitle');
-    const message = root.querySelector('#mockAdCountdown');
-    const cta = root.querySelector('#mockAdClickThrough');
-    const action = root.querySelector('#mockAdAction');
-    const url = MockAdsProvider.validUrl(this.clickUrlOverride) || ad.clickUrl;
+
+    // Create UI only when an ad is actually requested. No game-specific DOM/CSS.
+    const ui = new MockAdOverlay();
+    const video = ui.video;
+    const clickUrl = MockAdsProvider.validUrl(this.clickUrlOverride) || MockAdsProvider.validUrl(ad.clickUrl);
     let ended = false;
     let settled = false;
-    let started = false;
+    let showing = false;
+    let pending = false;
+    let timeout;
     let resolveResult;
     const result = new Promise(resolve => { resolveResult = resolve; });
-
-    const finish = (outcome) => {
+    const cleanups = [];
+    const listen = (target, name, handler) => {
+      target.addEventListener(name, handler);
+      cleanups.push(() => target.removeEventListener(name, handler));
+    };
+    const finish = outcome => {
       if (settled) return;
       settled = true;
+      clearTimeout(timeout);
+      cleanups.forEach(cleanup => cleanup());
       video.pause();
-      video.removeEventListener('ended', onEnded);
-      video.removeEventListener('error', onError);
       video.removeAttribute('src');
       video.load();
-      video.onclick = null;
-      cta.onclick = null;
-      action.onclick = null;
-      root.hidden = true;
-      if (started) onFinish();
+      ui.hide();
+      if (showing) onFinish();
       this.log('mock:finished', { adId: ad.id, format, ...outcome });
       resolveResult(outcome);
     };
-    const onEnded = () => {
-      ended = true;
-      message.textContent = format === 'rewarded' ? 'Reward unlocked.' : 'Mock ad complete.';
-      action.disabled = false;
-      action.textContent = format === 'rewarded' ? 'Claim Revive' : 'Continue';
-      this.log('mock:videoEnded', { adId: ad.id, format });
-    };
-    const onError = () => finish({ completed: false, rewarded: false, reason: 'load-error' });
-    const open = source => {
-      if (!url) return;
-      window.open(url, '_blank', 'noopener,noreferrer');
-      this.log('mock:clickThrough', { adId: ad.id, source, host: new URL(url).host });
-    };
-
-    title.textContent = format === 'rewarded' ? 'Mock Rewarded Ad' : 'Mock Interstitial Ad';
-    message.textContent = format === 'rewarded' ? 'Watch the full video to unlock the revive.' : 'Watch the mock ad video to continue.';
-    cta.disabled = !url;
-    cta.textContent = url ? 'Visit advertiser' : 'Advertiser link unavailable';
-    cta.onclick = () => open('cta');
-    video.onclick = () => open('video');
-    video.src = ad.video;
-    video.addEventListener('ended', onEnded);
-    video.addEventListener('error', onError);
-    action.disabled = true;
-    action.textContent = format === 'rewarded' ? 'Watch to Revive' : 'Continue';
-    action.onclick = () => {
-      if (!ended) return;
-      finish({ completed: true, rewarded: format === 'rewarded', reason: 'success' });
-    };
-    root.hidden = false;
-    started = true;
-    onStart();
-    const play = async () => {
+    const cancelled = { completed: false, rewarded: false, reason: 'user-close' };
+    const tryPlay = async () => {
+      if (settled || pending || ended || !ui.confirm.hidden) return;
+      pending = true;
+      ui.play.hidden = true;
       try {
         await video.play();
         this.log('mock:videoStarted', { adId: ad.id, format });
       } catch (error) {
         if (settled) return;
-        this.log('mock:autoplayBlocked', { adId: ad.id, message: String(error) });
-        message.textContent = 'Tap Play Ad to start the mock video.';
-        action.disabled = false;
-        action.textContent = 'Play Ad';
-        action.onclick = () => {
-          action.disabled = true;
-          action.textContent = 'Watch the video';
-          play();
-        };
+        if (video.error || error?.name === 'NotSupportedError') {
+          finish({ completed: false, rewarded: false, reason: 'load-error' });
+          return;
+        }
+        ui.status.textContent = '자동 재생이 차단됐습니다. 영상 재생을 눌러주세요.';
+        ui.play.hidden = false;
+        ui.play.focus();
+      } finally {
+        pending = false;
       }
     };
-    play();
+    const confirmClose = () => {
+      if (settled || !ui.confirm.hidden) return;
+      if (ended) { finish(cancelled); return; }
+      video.pause();
+      ui.confirm.hidden = false;
+      ui.resume.focus();
+    };
+    const continueWatching = () => {
+      if (settled) return;
+      ui.confirm.hidden = true;
+      ui.close.focus();
+      void tryPlay();
+    };
+    listen(video, 'ended', () => {
+      if (settled || !ui.confirm.hidden) return;
+      ended = true;
+      ui.claim.disabled = false;
+      ui.status.textContent = format === 'rewarded'
+        ? '영상 시청이 완료되었습니다. 보상 받기를 눌러주세요.'
+        : '영상 시청이 완료되었습니다. 계속하기를 눌러주세요.';
+      ui.claim.focus();
+      this.log('mock:videoEnded', { adId: ad.id, format });
+    });
+    listen(video, 'error', () => finish({ completed: false, rewarded: false, reason: 'load-error' }));
+    listen(video, 'timeupdate', () => {
+      if (!ended && Number.isFinite(video.duration)) {
+        ui.status.textContent = `광고 재생 중 · ${Math.min(video.currentTime, video.duration).toFixed(0)} / ${video.duration.toFixed(0)}초`;
+      }
+    });
+    listen(ui.claim, 'click', () => {
+      if (!ended || !ui.confirm.hidden) return;
+      finish({ completed: true, rewarded: format === 'rewarded', reason: 'success' });
+    });
+    listen(ui.play, 'click', () => { void tryPlay(); });
+    // A creative tap is a click-through, never playback completion or reward.
+    // Open synchronously in the user gesture to avoid mobile popup blockers.
+    const openAdvertiser = () => {
+      if (settled || !ui.confirm.hidden || !clickUrl) return;
+      const page = window.open(clickUrl, '_blank', 'noopener,noreferrer');
+      this.log('mock:clickThrough', { adId: ad.id, host: new URL(clickUrl).host, opened: Boolean(page) });
+    };
+    listen(video, 'click', openAdvertiser);
+    listen(video, 'keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openAdvertiser();
+    });
+    listen(ui.close, 'click', confirmClose);
+    listen(ui.resume, 'click', continueWatching);
+    listen(ui.quit, 'click', () => finish(cancelled));
+    listen(ui.host.shadowRoot, 'keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); confirmClose(); }
+      if (event.key !== 'Tab') return;
+      const root = ui.confirm.hidden ? ui.host.shadowRoot.querySelector('.card') : ui.confirm;
+      const items = [...root.querySelectorAll('button:not([disabled]):not([hidden])')].filter(el => el.offsetParent !== null);
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && ui.host.shadowRoot.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && ui.host.shadowRoot.activeElement === last) { event.preventDefault(); first.focus(); }
+    });
+
+    ui.claim.textContent = format === 'rewarded' ? '보상 받기' : '계속하기';
+    video.muted = true;
+    video.playsInline = true;
+    // Native scrubber is deliberately absent: no seeking past the ad in ordinary UX.
+    video.controls = false;
+    video.tabIndex = clickUrl ? 0 : -1;
+    video.setAttribute('role', clickUrl ? 'link' : 'img');
+    video.setAttribute('aria-label', clickUrl ? '광고 영상: 광고주 사이트 열기' : '테스트 광고 영상');
+    video.src = new URL(ad.video, document.baseURI).href;
+    try {
+      ui.open();
+      showing = true;
+      onStart();
+      timeout = setTimeout(() => finish({ completed: false, rewarded: false, reason: 'timeout' }), 90000);
+      void tryPlay();
+    } catch (error) {
+      this.log('mock:showError', { adId: ad.id, message: String(error) });
+      finish({ completed: false, rewarded: false, reason: 'provider-error' });
+    }
     return result;
   }
 }

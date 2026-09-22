@@ -2,12 +2,12 @@
     "schemaVersion":  1,
     "channel":  "ephemeral-pr-preview",
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "a4cd6ad0c3182ea78b92aefe777625a2f31e07ab",
+    "sourceCommit":  "6001c4acd82be1a51074567b0c559bb293d4800b",
     "pullRequest":  22,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "35570287809",
-    "runnerName":  "FRD-DESKTOP-01",
-    "builtAt":  "2026-09-21T06:52:20.0644719Z",
+    "buildRunId":  "35718549786",
+    "runnerName":  "FRD-LAPTOP-01",
+    "builtAt":  "2026-09-22T10:54:58.8729442Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
@@ -43,12 +43,20 @@
                       "sha256":  "e35fe173e94192e066aa12d13824ebffd920aa2ad1172d9d41bc7e85dd4a024f"
                   },
                   {
+                      "path":  "h5-ads/ads/MockAdOverlay.js",
+                      "sha256":  "4209fd3ed28d917a639e69814d19a97f7d970cc9f9c19f1d2efb9f7c44e6caa7"
+                  },
+                  {
+                      "path":  "h5-ads/ads/MockAdOverlay.test.js",
+                      "sha256":  "f438b88b936e0df4f77ea4313b53ece70db1d43aabb83735ab700307a3516ca0"
+                  },
+                  {
                       "path":  "h5-ads/ads/MockAdsProvider.js",
-                      "sha256":  "29afd576d9a1e27d0146a211bdd479e7c6ce804c195a560aed29ed1a0e971c17"
+                      "sha256":  "dace0202f4943f16387824f70d5da855d3613dc9f0feadfdefce5726b0c968d6"
                   },
                   {
                       "path":  "h5-ads/ads/README.md",
-                      "sha256":  "f8840dfa355ae00406d6dbf000b208bc3f2b1bd5de3e9c7a49a73418d9d4359c"
+                      "sha256":  "efb3326b9b259d35449411694e1f6633d1bf1fd35f69b2ace2b061b9d5a5641e"
                   },
                   {
                       "path":  "h5-ads/assets/mock/265065.mp4",
@@ -64,7 +72,7 @@
                   },
                   {
                       "path":  "h5-ads/index.html",
-                      "sha256":  "6286daac67ef1427496f36b0ee56c38f07becce68770f4666a89ed76381ebf77"
+                      "sha256":  "75fe7ed67c1e30f3221b95a7a3ea6bb7b05e7df224516d531c1e64fc8acc4b48"
                   },
                   {
                       "path":  "h5-ads/package.json",
