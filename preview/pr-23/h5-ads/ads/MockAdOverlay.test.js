@@ -26,6 +26,7 @@ function fakeDocument() {
     load() {}
   });
   const close = node(), claim = node(), play = node(), advertiser = node(), confirm = node();
+  claim.disabled = true; // fake DOM does not parse the HTML disabled attribute
   confirm.hidden = true;
   const resume = node(), quit = node(), status = node();
   const buttons = [close, play, advertiser, claim];

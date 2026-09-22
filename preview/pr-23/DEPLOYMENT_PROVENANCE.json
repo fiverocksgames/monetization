@@ -2,12 +2,12 @@
     "schemaVersion":  1,
     "channel":  "ephemeral-pr-preview",
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "6f58c7298fca23b9ccee0d1e70d4fc03302a4cb9",
+    "sourceCommit":  "2b48cee6aa930a32ea39725118a9c86791d2fbee",
     "pullRequest":  23,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "35673690668",
-    "runnerName":  "FRD-LAPTOP-01",
-    "builtAt":  "2026-09-22T00:57:34.7668332Z",
+    "buildRunId":  "35678331082",
+    "runnerName":  "FRD-DESKTOP-01",
+    "builtAt":  "2026-09-22T02:08:21.6144370Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
@@ -48,7 +48,7 @@
                   },
                   {
                       "path":  "h5-ads/ads/MockAdOverlay.test.js",
-                      "sha256":  "f612897ec36d546b8f160926bf3f72fa171e48a311a14058d9c735904d434484"
+                      "sha256":  "88f131fe01058048485859f871bf7b1ec304d16a69deae52d683f1e4936b5e40"
                   },
                   {
                       "path":  "h5-ads/ads/MockAdsProvider.js",
