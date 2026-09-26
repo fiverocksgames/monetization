@@ -708,6 +708,7 @@ import { AdsService } from './ads/AdsService.js';
     manifestUrl: 'assets/mock/manifest.json',
     fallbackAds: FALLBACK_MOCK_ADS,
     mockClickUrl: runtimeParams.get('mockClickUrl') || runtimeConfig.mockClickUrl || '',
+    mockVideoUrl: runtimeParams.get('mockVideoUrl') || runtimeConfig.mockVideoUrl || '',
     log,
     onStatus: status => {
       apiState.textContent = status;
