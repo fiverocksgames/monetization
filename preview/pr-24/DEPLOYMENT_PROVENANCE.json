@@ -5,9 +5,9 @@
     "sourceCommit":  "c5116d6a932c2418615d0d83a2195b36ce23a244",
     "pullRequest":  24,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "36249150964",
-    "runnerName":  "FRD-DESKTOP-01",
-    "builtAt":  "2026-09-26T14:38:22.4977048Z",
+    "buildRunId":  "36285815321",
+    "runnerName":  "FRD-LAPTOP-01",
+    "builtAt":  "2026-09-27T01:32:16.5344345Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
