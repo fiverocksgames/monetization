@@ -1,0 +1,16 @@
+﻿{
+    "schemaVersion":  1,
+    "assetId":  "h5-dev-mock-rewarded-v1",
+    "purpose":  "development-only-mock-ad",
+    "sourceRepository":  "fiverocks-dev/monetization",
+    "sourceCommit":  "55d6f287de489f3fea0d6edb062ae7679ad7af07",
+    "sourcePath":  "lab/h5-ads/assets/mock/h5-dev-mock-rewarded-v1.mp4",
+    "sourceOriginalFilename":  "265552.mp4",
+    "size":  1474966,
+    "sha256":  "415a558abb5208a7c253de7570482555df2eb2ffcec3ecf614cdbac98da8c9ca",
+    "rightsBasisRef":  "https://github.com/fiverocks-dev/monetization/blob/main/docs/policies/H5_DEV_MOCK_ASSET_RIGHTS.md",
+    "canonicalUrl":  "https://fiverocksgames.github.io/monetization/assets/mock/h5-dev-mock-rewarded-v1.mp4",
+    "publishedAt":  "2026-09-30T09:00:21.5474189Z",
+    "workflow":  "Deploy Canonical Development Mock Asset",
+    "runId":  "36688730943"
+}
