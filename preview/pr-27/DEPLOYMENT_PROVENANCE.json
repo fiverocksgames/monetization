@@ -2,12 +2,12 @@
     "schemaVersion":  1,
     "channel":  "ephemeral-pr-preview",
     "sourceRepository":  "fiverocks-dev/monetization",
-    "sourceCommit":  "15b6dec798270322f44e197e3a1b80a495307245",
+    "sourceCommit":  "a3552775015e9ae09f76310428748eb6e432347b",
     "pullRequest":  27,
     "buildWorkflow":  "PR Preview Build",
-    "buildRunId":  "36583251200",
+    "buildRunId":  "36652718074",
     "runnerName":  "FRD-LAPTOP-01",
-    "builtAt":  "2026-09-29T14:31:18.0903399Z",
+    "builtAt":  "2026-09-30T00:56:49.5660652Z",
     "toolchain":  "static-lab-source",
     "files":  [
                   {
