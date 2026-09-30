@@ -10,7 +10,7 @@
     "sha256":  "415a558abb5208a7c253de7570482555df2eb2ffcec3ecf614cdbac98da8c9ca",
     "rightsBasisRef":  "https://github.com/fiverocks-dev/monetization/blob/main/docs/policies/H5_DEV_MOCK_ASSET_RIGHTS.md",
     "canonicalUrl":  "https://fiverocksgames.github.io/monetization/assets/mock/h5-dev-mock-rewarded-v1.mp4",
-    "publishedAt":  "2026-09-30T09:00:21.5474189Z",
+    "publishedAt":  "2026-09-30T15:11:10.1339196Z",
     "workflow":  "Deploy Canonical Development Mock Asset",
     "runId":  "36688730943"
 }
