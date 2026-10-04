@@ -77,6 +77,8 @@ test('SDK owns overlay without visible test-ad title; pre-completion close requi
     assert.equal(ui.host.hidden, false);
     assert.equal(ui.shadow.innerHTML.includes('테스트 광고'), false);
     assert.match(ui.shadow.innerHTML, /aria-label="광고"/);
+    assert.match(ui.shadow.innerHTML, /width:\s*100%;\s*height:\s*100vh;\s*height:\s*100dvh/);
+    assert.doesNotMatch(ui.shadow.innerHTML, /width:\s*min\(460px/);
     assert.equal(ui.video.src, 'https://example.org/preview/pr-22/assets/mock/h5-dev-mock-rewarded-v1.mp4');
     assert.equal(ui.claim.disabled, true);
     ui.close.emit('click');
