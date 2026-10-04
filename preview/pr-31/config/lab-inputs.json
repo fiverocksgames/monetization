@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "components": {
+    "math-rain": {
+      "repository": "fiverocks-dev/math-rain",
+      "sourceCommit": "754ef91d36177a3e8fbd49353d0025a9cdc62c64"
+    },
+    "memory-game": {
+      "repository": "fiverocks-dev/memory-game",
+      "sourceCommit": "f97ebaf28ee6c61609ee7d1ffcfc19bbf3878a26"
+    },
+    "make-it-max": {
+      "repository": "fiverocks-dev/make-it-max",
+      "sourceCommit": "1394ca12e3208f9c2518c20634ad654d5d652154"
+    },
+    "math-fighter": {
+      "repository": "fiverocks-dev/math-fighter",
+      "sourceCommit": "79a5f3bcc656eb2920036da8c4e9092013d8cb95",
+      "artifactKind": "unity-webgl"
+    }
+  }
+}
